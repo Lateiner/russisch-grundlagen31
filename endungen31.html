@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Russisch Grammatik: Endungen (10 Beispiele)</title>
+    <style>
+        :root {
+            --primary: #5c6bc0;
+            --primary-dark: #3949ab;
+            --bg-color: #f0f4f8;
+            --card-bg: #ffffff;
+            --text: #37474f;
+            --success: #66bb6a;
+            --error: #ef5350;
+            --border-radius: 12px;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: var(--primary);
+            margin: 0 0 10px 0;
+            font-size: 1.8rem;
+        }
+
+        .subtitle {
+            color: #78909c;
+            font-size: 1rem;
+        }
+
+        .hint-box {
+            background-color: #e8eaf6;
+            border-left: 4px solid var(--primary);
+            padding: 15px;
+            margin-bottom: 30px;
+            border-radius: 4px;
+            font-size: 0.95rem;
+        }
+
+        .hint-title {
+            font-weight: bold;
+            color: var(--primary-dark);
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        /* Sentence List Styles */
+        .sentence-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .sentence-item {
+            background-color: #fff;
+            border: 1px solid #e0e0e0;
+            padding: 15px 20px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .sentence-item:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(92, 107, 192, 0.1);
+        }
+
+        .number-badge {
+            background-color: var(--primary);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+
+        .sentence-text {
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 5px;
+            flex-grow: 1;
+        }
+
+        .translation {
+            display: block;
+            width: 100%;
+            font-size: 0.85rem;
+            color: #78909c;
+            margin-top: 5px;
+            font-style: italic;
+            padding-left: 35px; /* Indent under text */
+        }
+
+        /* Styled Select */
+        select {
+            appearance: none;
+            background-color: #fafafa;
+            border: 2px solid #b0bec5;
+            border-radius: 6px;
+            padding: 5px 30px 5px 10px;
+            font-size: 1.1rem;
+            color: #333;
+            cursor: pointer;
+            font-family: inherit;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007CB2%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+            background-repeat: no-repeat;
+            background-position: right .7em top 50%;
+            background-size: .65em auto;
+            min-width: 120px;
+        }
+
+        select:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+
+        /* Validation States */
+        select.correct {
+            border-color: var(--success);
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        select.wrong {
+            border-color: var(--error);
+            background-color: #ffebee;
+            color: #c62828;
+        }
+
+        /* Controls */
+        .controls {
+            margin-top: 30px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            min-width: 140px;
+        }
+
+        .btn-check {
+            background-color: var(--primary);
+            color: white;
+        }
+        .btn-check:hover { background-color: var(--primary-dark); }
+
+        .btn-reset {
+            background-color: #cfd8dc;
+            color: #455a64;
+        }
+        .btn-reset:hover { background-color: #b0bec5; }
+
+        .btn-solve {
+            background-color: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+        .btn-solve:hover { background-color: #e8eaf6; }
+
+        .feedback {
+            margin-top: 15px;
+            text-align: center;
+            font-weight: bold;
+            min-height: 1.5em;
+        }
+
+        /* Mobile specific */
+        @media (max-width: 600px) {
+            .container { padding: 15px; }
+            h1 { font-size: 1.5rem; }
+            .sentence-text { font-size: 1rem; }
+            button { width: 100%; }
+            .translation { padding-left: 0; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Richtige Endungen</h1>
+        <div class="subtitle">Wählen Sie die korrekte Form von „друг“.</div>
+    </header>
+
+    <div class="hint-box">
+        <span class="hint-title">Grammatik-Hilfe:</span>
+        <ul style="margin: 5px 0 0 20px; padding:0;">
+            <li><strong>друга</strong> (Genitiv/Akkusativ) – Wen? Von wem? Ohne wen?</li>
+            <li><strong>другу</strong> (Dativ) – Wem? Zu wem?</li>
+            <li><strong>другом</strong> (Instrumental) – Mit wem? Vor wem?</li>
+            <li><strong>друге</strong> (Präpositiv) – Über wen?</li>
+        </ul>
+    </div>
+
+    <div class="sentence-list">
+
+        <!-- Satz 1: Akkusativ -->
+        <div class="sentence-item">
+            <div class="number-badge">1</div>
+            <div class="sentence-text">
+                Они очень любят друг 
+                <select data-correct="друга">
+                    <option value="" selected disabled>...</option>
+                    <option value="друга">друга</option>
+                    <option value="другу">другу</option>
+                    <option value="другом">другом</option>
+                    <option value="друге">друге</option>
+                </select>.
+            </div>
+            <span class="translation">Sie lieben einander sehr. (Wen?)</span>
+        </div>
+
+        <!-- Satz 2: Dativ -->
+        <div class="sentence-item">
+            <div class="number-badge">2</div>
+            <div class="sentence-text">
+                Мы всегда помогаем друг 
+                <select data-correct="другу">
+                    <option value="" selected disabled>...</option>
+                    <option value="друга">друга</option>
+                    <option value="другу">другу</option>
+                    <option value="другом">другом</option>
+                    <option value="друге">друге</option>
+                </select>.
+            </div>
+            <span class="translation">Wir helfen einander immer. (Wem?)</span>
+        </div>
+
+        <!-- Satz 3: Präpositiv (o ...) -->
+        <div class="sentence-item">
+            <div class="number-badge">3</div>
+            <div class="sentence-text">
+                Вы всё знаете друг о 
+                <select data-correct="друге">
+                    <option value="" selected disabled>...</option>
+                    <option value="друга">друга</option>
+                    <option value="другу">другу</option>
+                    <option value="другом">другом</option>
+                    <option value="друге">друге</option>
+                </select>.
+            </div>
+            <span class="translation">Ihr wisst alles übereinander. (Über wen?)</span>
+        </div>
+
+        <!-- Satz 4: Instrumental (s ...) -->
+        <div class="sentence-item">
+            <div class="number-badge">4</div>
+            <div class="sentence-text">
+                Они не говорят друг с 
+                <select data-correct="другом">
+                    <option value="" selected disabled>...</option>
+                    <option value="друга">друга</option>
+                    <option value="другу">другу</option>
+                    <option value="другом">другом</option>
+                    <option value="друге">друге</option>
+                </select>.
+            </div>
+            <span class="translation">Sie sprechen nicht miteinander. (Mit wem?)</span>
+        </div>
+
+        <!-- Satz 5: Dativ (k ...) -->
+        <div class="sentence-item">
+            <div class="number-badge">5</div>
+            <div class="sentence-text">
+                Мы часто ходим друг к 
+                <select data-correct="другу">
+                    <option value="" selected disabled>...</option>
+                    <option value="друга">друга</option>
+                    <option value="другу">другу</option>
+                    <option value="другом">другом</option>
+                    <option value="друге">друге</option>
+                </select> в гости.
+            </div>
+            <span class="translation">Wir gehen oft zueinander zu Besuch. (Zu wem?)</span>
+        </div>
+
+        <!-- Satz 6: Genitiv (ot ...) -->
+        <div class="sentence-item">
+            <div class="number-badge">6</div>
+            <div class="sentence-text">
+                Мы получили письма друг от 
+                <select data-correct="друга">
+                    <option value="" selected disabled>...</option>
+                    <option value="друга">друга</option>
+                    <option value="другу">другу</option>
+                    <option value="другом">другом</option>
+                    <option value="друге">друге</option>
+                </select>.
+            </div>
+            <span class="translation">Wir haben Briefe voneinander erhalten. (Von wem?)</span>
+        </div>
+
+        <!-- Satz 7: Akkusativ (na ...) -->
+        <div class="sentence-item">
+            <div class="number-badge">7</div>
+            <div class="sentence-text">
+                Они долго смотрели друг на 
+                <select data-correct="друга">
+                    <option value="" selected disabled>...</option>
+                    <option value="друга">друга</option>
+                    <option value="другу">другу</option>
+                    <option value="другом">другом</option>
+                    <option value="друге">друге</option>
+                </select>.
+            </div>
+            <span class="translation">Sie schauten einander lange an. (Auf wen?)</span>
+        </div>
+
+        <!-- Satz 8: Genitiv (bez ...) -->
+        <div class="sentence-item">
+            <div class="number-badge">8</div>
+            <div class="sentence-text">
+                Они не могут жить друг без 
+                <select data-correct="друга">
+                    <option value="" selected disabled>...</option>
+                    <option value="друга">друга</option>
+                    <option value="другу">другу</option>
+                    <option value="другом">другом</option>
+                    <option value="друге">друге</option>
+                </select>.
+            </div>
+            <span class="translation">Sie können nicht ohne einander leben. (Ohne wen?)</span>
+        </div>
+
+        <!-- Satz 9: Instrumental (pered ...) -->
+        <div class="sentence-item">
+            <div class="number-badge">9</div>
+            <div class="sentence-text">
+                Мы извинились друг перед 
+                <select data-correct="другом">
+                    <option value="" selected disabled>...</option>
+                    <option value="друга">друга</option>
+                    <option value="другу">другу</option>
+                    <option value="другом">другом</option>
+                    <option value="друге">друге</option>
+                </select>.
+            </div>
+            <span class="translation">Wir haben uns voreinander entschuldigt. (Vor wem?)</span>
+        </div>
+
+        <!-- Satz 10: Genitiv (dlya ...) -->
+        <div class="sentence-item">
+            <div class="number-badge">10</div>
+            <div class="sentence-text">
+                Они живут друг для 
+                <select data-correct="друга">
+                    <option value="" selected disabled>...</option>
+                    <option value="друга">друга</option>
+                    <option value="другу">другу</option>
+                    <option value="другом">другом</option>
+                    <option value="друге">друге</option>
+                </select>.
+            </div>
+            <span class="translation">Sie leben füreinander. (Für wen?)</span>
+        </div>
+
+    </div>
+
+    <div class="feedback" id="feedback-msg"></div>
+
+    <div class="controls">
+        <button class="btn-check" onclick="checkAnswers()">Überprüfen</button>
+        <button class="btn-reset" onclick="resetGame()">Zurücksetzen</button>
+        <button class="btn-solve" onclick="showSolution()">Lösung anzeigen</button>
+    </div>
+</div>
+
+<script>
+    function checkAnswers() {
+        const selects = document.querySelectorAll('select');
+        const feedback = document.getElementById('feedback-msg');
+        let correctCount = 0;
+        let allFilled = true;
+
+        selects.forEach(select => {
+            if (select.value === "") {
+                allFilled = false;
+                select.classList.remove('correct', 'wrong');
+            } else if (select.value === select.dataset.correct) {
+                select.classList.add('correct');
+                select.classList.remove('wrong');
+                correctCount++;
+            } else {
+                select.classList.add('wrong');
+                select.classList.remove('correct');
+            }
+        });
+
+        if (!allFilled) {
+            feedback.style.color = "#ffa000";
+            feedback.textContent = "Bitte füllen Sie alle Lücken aus.";
+        } else if (correctCount === selects.length) {
+            feedback.style.color = "var(--success)";
+            feedback.textContent = "Hervorragend! Alle Formen sind korrekt.";
+        } else {
+            feedback.style.color = "var(--error)";
+            feedback.textContent = `Sie haben ${correctCount} von ${selects.length} richtig. Versuchen Sie es noch einmal.`;
+        }
+    }
+
+    function resetGame() {
+        const selects = document.querySelectorAll('select');
+        selects.forEach(select => {
+            select.value = "";
+            select.classList.remove('correct', 'wrong');
+        });
+        document.getElementById('feedback-msg').textContent = "";
+    }
+
+    function showSolution() {
+        const selects = document.querySelectorAll('select');
+        selects.forEach(select => {
+            select.value = select.dataset.correct;
+            select.classList.remove('wrong');
+            select.classList.add('correct');
+        });
+        const feedback = document.getElementById('feedback-msg');
+        feedback.style.color = "var(--primary)";
+        feedback.textContent = "Lösungen wurden eingefügt.";
+    }
+</script>
+
+</body>
+</html>
