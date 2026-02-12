@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Russisch: Das Spiegel-Prinzip (друг друга)</title>
+    <style>
+        :root {
+            --primary: #2196F3;
+            --primary-dark: #1976D2;
+            --accent: #FF4081;
+            --bg-color: #f0f2f5;
+            --card-bg: #ffffff;
+            --text-main: #333333;
+            --success: #4CAF50;
+            --error: #F44336;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: var(--primary-dark);
+            margin-bottom: 10px;
+        }
+
+        .instruction-box {
+            background-color: #e3f2fd;
+            border-left: 5px solid var(--primary);
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        /* Task Card Styling */
+        .task-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+
+        .task-header {
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .mirror-visual {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            background: #fafafa;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px dashed #ccc;
+            flex-wrap: wrap;
+            text-align: center;
+        }
+
+        .mirror-part {
+            font-style: italic;
+            color: #666;
+        }
+
+        .arrow-icon {
+            font-size: 1.5em;
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        /* Word Building Area */
+        .sentence-builder-area {
+            min-height: 60px;
+            background-color: #fff;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 15px;
+            transition: border-color 0.3s;
+        }
+
+        .sentence-builder-area.correct {
+            border-color: var(--success);
+            background-color: #e8f5e9;
+        }
+
+        .sentence-builder-area.wrong {
+            border-color: var(--error);
+            background-color: #ffebee;
+        }
+
+        .word-bank {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 10px;
+            background-color: #eceff1;
+            border-radius: 8px;
+            min-height: 50px;
+        }
+
+        /* The clickable words */
+        .word-chip {
+            background-color: white;
+            border: 1px solid #b0bec5;
+            border-radius: 20px;
+            padding: 8px 16px;
+            cursor: pointer;
+            user-select: none;
+            font-size: 1rem;
+            box-shadow: 0 2px 2px rgba(0,0,0,0.05);
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+
+        .word-chip:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 4px rgba(0,0,0,0.1);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .word-chip:active {
+            transform: translateY(0);
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            flex-grow: 1;
+            max-width: 200px;
+        }
+
+        .btn-check {
+            background-color: var(--primary);
+            color: white;
+        }
+        .btn-check:hover { background-color: var(--primary-dark); }
+
+        .btn-reset {
+            background-color: #90a4ae;
+            color: white;
+        }
+        .btn-reset:hover { background-color: #78909c; }
+
+        .btn-solve {
+            background-color: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+        .btn-solve:hover { background-color: #e3f2fd; }
+
+        .feedback {
+            margin-top: 10px;
+            font-weight: bold;
+            min-height: 1.5em;
+        }
+        .feedback.success { color: var(--success); }
+        .feedback.error { color: var(--error); }
+
+        /* Mobile specific adjustments */
+        @media (max-width: 600px) {
+            .container { padding: 10px; }
+            .task-card { padding: 15px; }
+            .word-chip { padding: 6px 12px; font-size: 0.9rem; }
+            .controls button { width: 100%; max-width: none; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Das Spiegel-Prinzip</h1>
+        <p>Verständnis & Logik: Von zwei Sätzen zu einem.</p>
+    </header>
+
+    <div class="instruction-box">
+        <h3>Anleitung:</h3>
+        <p>Verbinden Sie die zwei Einzelsätze zu einem Satz mit „einander“ (друг друга).<br>
+        <strong>Tippen Sie auf die Wörter</strong> unten, um den Satz zu bauen. Sie brauchen keine Tastatur.</p>
+    </div>
+
+    <!-- AUFGABE 1: Akkusativ -->
+    <div class="task-card" id="task1">
+        <div class="task-header">
+            <span>Aufgabe 1: Akkusativ (lieben)</span>
+        </div>
+        
+        <!-- Das visuelle "Spiegel"-Problem -->
+        <div class="mirror-visual">
+            <div class="mirror-part">Anna liebt Peter.<br>Анна любит Петра.</div>
+            <div class="arrow-icon">+</div>
+            <div class="mirror-part">Peter liebt Anna.<br>Пётр любит Анну.</div>
+            <div class="arrow-icon">=</div>
+            <div class="mirror-part"><strong>?</strong></div>
+        </div>
+
+        <!-- Konstruktionsbereich -->
+        <p style="margin-bottom: 5px; font-size: 0.9em; color:#666;">Bauen Sie den Satz: "Sie lieben einander."</p>
+        <div class="sentence-builder-area" id="area-1">
+            <!-- Hier landen die Wörter -->
+        </div>
+
+        <!-- Wortbank -->
+        <div class="word-bank" id="bank-1">
+            <span class="word-chip" onclick="moveWord(this, 'area-1', 'bank-1')">любят</span>
+            <span class="word-chip" onclick="moveWord(this, 'area-1', 'bank-1')">друга</span>
+            <span class="word-chip" onclick="moveWord(this, 'area-1', 'bank-1')">Они</span>
+            <span class="word-chip" onclick="moveWord(this, 'area-1', 'bank-1')">друг</span>
+        </div>
+
+        <div class="feedback" id="feedback-1"></div>
+
+        <div class="controls">
+            <button class="btn-check" onclick="checkTask(1, ['Они', 'любят', 'друг', 'друга'])">Überprüfen</button>
+            <button class="btn-reset" onclick="resetTask(1)">Zurücksetzen</button>
+            <button class="btn-solve" onclick="solveTask(1, ['Они', 'любят', 'друг', 'друга'])">Lösung</button>
+        </div>
+    </div>
+
+    <!-- AUFGABE 2: Dativ -->
+    <div class="task-card" id="task2">
+        <div class="task-header">
+            <span>Aufgabe 2: Dativ (helfen)</span>
+        </div>
+        
+        <div class="mirror-visual">
+            <div class="mirror-part">Mascha hilft Ira.<br>Маша помогает Ире.</div>
+            <div class="arrow-icon">+</div>
+            <div class="mirror-part">Ira hilft Mascha.<br>Ира помогает Маше.</div>
+            <div class="arrow-icon">=</div>
+            <div class="mirror-part"><strong>?</strong></div>
+        </div>
+
+        <p style="margin-bottom: 5px; font-size: 0.9em; color:#666;">Bauen Sie den Satz: "Sie helfen einander."</p>
+        <div class="sentence-builder-area" id="area-2"></div>
+
+        <div class="word-bank" id="bank-2">
+            <span class="word-chip" onclick="moveWord(this, 'area-2', 'bank-2')">другу</span>
+            <span class="word-chip" onclick="moveWord(this, 'area-2', 'bank-2')">Они</span>
+            <span class="word-chip" onclick="moveWord(this, 'area-2', 'bank-2')">помогают</span>
+            <span class="word-chip" onclick="moveWord(this, 'area-2', 'bank-2')">друг</span>
+        </div>
+
+        <div class="feedback" id="feedback-2"></div>
+
+        <div class="controls">
+            <button class="btn-check" onclick="checkTask(2, ['Они', 'помогают', 'друг', 'другу'])">Überprüfen</button>
+            <button class="btn-reset" onclick="resetTask(2)">Zurücksetzen</button>
+            <button class="btn-solve" onclick="solveTask(2, ['Они', 'помогают', 'друг', 'другу'])">Lösung</button>
+        </div>
+    </div>
+
+    <!-- AUFGABE 3: Präposition (mit) -->
+    <div class="task-card" id="task3">
+        <div class="task-header">
+            <span>Aufgabe 3: Instrumental (sprechen mit)</span>
+        </div>
+        
+        <div class="mirror-visual">
+            <div class="mirror-part">Anton spricht mit Olya.<br>Антон говорит с Олей.</div>
+            <div class="arrow-icon">+</div>
+            <div class="mirror-part">Olya spricht mit Anton.<br>Оля говорит с Антоном.</div>
+            <div class="arrow-icon">=</div>
+            <div class="mirror-part"><strong>?</strong></div>
+        </div>
+
+        <p style="margin-bottom: 5px; font-size: 0.9em; color:#666;">Achtung: Wo steht die Präposition "с"?</p>
+        <div class="sentence-builder-area" id="area-3"></div>
+
+        <div class="word-bank" id="bank-3">
+            <span class="word-chip" onclick="moveWord(this, 'area-3', 'bank-3')">с</span>
+            <span class="word-chip" onclick="moveWord(this, 'area-3', 'bank-3')">друг</span>
+            <span class="word-chip" onclick="moveWord(this, 'area-3', 'bank-3')">Они</span>
+            <span class="word-chip" onclick="moveWord(this, 'area-3', 'bank-3')">другом</span>
+            <span class="word-chip" onclick="moveWord(this, 'area-3', 'bank-3')">говорят</span>
+        </div>
+
+        <div class="feedback" id="feedback-3"></div>
+
+        <div class="controls">
+            <button class="btn-check" onclick="checkTask(3, ['Они', 'говорят', 'друг', 'с', 'другом'])">Überprüfen</button>
+            <button class="btn-reset" onclick="resetTask(3)">Zurücksetzen</button>
+            <button class="btn-solve" onclick="solveTask(3, ['Они', 'говорят', 'друг', 'с', 'другом'])">Lösung</button>
+        </div>
+    </div>
+
+    <!-- AUFGABE 4: Personalpronomen (Wir) -->
+    <div class="task-card" id="task4">
+        <div class="task-header">
+            <span>Aufgabe 4: Personalpronomen "Wir" (denken über)</span>
+        </div>
+        
+        <div class="mirror-visual">
+            <div class="mirror-part">Ich denke an dich.<br>Я думаю о тебе.</div>
+            <div class="arrow-icon">+</div>
+            <div class="mirror-part">Du denkst an mich.<br>Ты думаешь обо мне.</div>
+            <div class="arrow-icon">=</div>
+            <div class="mirror-part"><strong>?</strong></div>
+        </div>
+
+        <p style="margin-bottom: 5px; font-size: 0.9em; color:#666;">Bauen Sie: "Wir denken aneinander (übereinander)."</p>
+        <div class="sentence-builder-area" id="area-4"></div>
+
+        <div class="word-bank" id="bank-4">
+            <span class="word-chip" onclick="moveWord(this, 'area-4', 'bank-4')">о</span>
+            <span class="word-chip" onclick="moveWord(this, 'area-4', 'bank-4')">друг</span>
+            <span class="word-chip" onclick="moveWord(this, 'area-4', 'bank-4')">думаем</span>
+            <span class="word-chip" onclick="moveWord(this, 'area-4', 'bank-4')">Мы</span>
+            <span class="word-chip" onclick="moveWord(this, 'area-4', 'bank-4')">друге</span>
+        </div>
+
+        <div class="feedback" id="feedback-4"></div>
+
+        <div class="controls">
+            <button class="btn-check" onclick="checkTask(4, ['Мы', 'думаем', 'друг', 'о', 'друге'])">Überprüfen</button>
+            <button class="btn-reset" onclick="resetTask(4)">Zurücksetzen</button>
+            <button class="btn-solve" onclick="solveTask(4, ['Мы', 'думаем', 'друг', 'о', 'друге'])">Lösung</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // Logic: Click to move element between containers
+    function moveWord(element, areaId, bankId) {
+        const area = document.getElementById(areaId);
+        const bank = document.getElementById(bankId);
+        
+        // Remove visual feedback classes on interaction
+        area.classList.remove('correct', 'wrong');
+        const feedback = document.getElementById(areaId.replace('area', 'feedback'));
+        if(feedback) feedback.textContent = '';
+
+        if (element.parentElement.id === bankId) {
+            // Move from Bank to Area
+            area.appendChild(element);
+        } else {
+            // Move from Area to Bank
+            bank.appendChild(element);
+        }
+    }
+
+    function checkTask(id, correctOrder) {
+        const area = document.getElementById(`area-${id}`);
+        const feedback = document.getElementById(`feedback-${id}`);
+        const userWords = Array.from(area.children).map(span => span.textContent.trim());
+
+        if (userWords.length === 0) {
+            feedback.textContent = "Bitte wählen Sie Wörter aus.";
+            feedback.className = "feedback error";
+            return;
+        }
+
+        // Compare arrays
+        const isCorrect = JSON.stringify(userWords) === JSON.stringify(correctOrder);
+
+        if (isCorrect) {
+            area.classList.add('correct');
+            area.classList.remove('wrong');
+            feedback.textContent = "Richtig! Das Spiegel-Prinzip verstanden.";
+            feedback.className = "feedback success";
+        } else {
+            area.classList.add('wrong');
+            area.classList.remove('correct');
+            feedback.textContent = "Das ist noch nicht ganz richtig. Überprüfen Sie die Reihenfolge.";
+            feedback.className = "feedback error";
+        }
+    }
+
+    function resetTask(id) {
+        const area = document.getElementById(`area-${id}`);
+        const bank = document.getElementById(`bank-${id}`);
+        const feedback = document.getElementById(`feedback-${id}`);
+        
+        // Move all children back to bank
+        while (area.children.length > 0) {
+            bank.appendChild(area.children[0]);
+        }
+
+        // Shuffle bank visually (simple sort by random)
+        Array.from(bank.children)
+            .sort(() => Math.random() - 0.5)
+            .forEach(node => bank.appendChild(node));
+
+        // Reset Styles
+        area.classList.remove('correct', 'wrong');
+        feedback.textContent = '';
+    }
+
+    function solveTask(id, correctOrder) {
+        const area = document.getElementById(`area-${id}`);
+        const bank = document.getElementById(`bank-${id}`);
+        
+        // First reset
+        resetTask(id);
+
+        // Then pick words in order
+        correctOrder.forEach(wordText => {
+            // Find the chip in bank with this text
+            const chips = Array.from(bank.children);
+            const chip = chips.find(c => c.textContent.trim() === wordText);
+            if (chip) {
+                area.appendChild(chip);
+            }
+        });
+
+        checkTask(id, correctOrder); // Trigger success state
+    }
+
+    // Initial Shuffle on load
+    window.onload = function() {
+        for(let i=1; i<=4; i++) {
+            resetTask(i);
+        }
+    };
+</script>
+
+</body>
+</html>
