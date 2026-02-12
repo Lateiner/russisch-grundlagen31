@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Russisch: Präposition wählen</title>
+    <style>
+        :root {
+            --primary: #00897b;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --text: #37474f;
+            --success: #4caf50;
+            --error: #e53935;
+            --border: #cfd8dc;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            color: var(--primary);
+            margin: 0 0 10px 0;
+            font-size: 1.8rem;
+        }
+
+        .subtitle {
+            color: #78909c;
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Question Item */
+        .question-card {
+            background-color: #fff;
+            border: 1px solid var(--border);
+            border-left: 5px solid var(--primary);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+        }
+
+        .info-row {
+            margin-bottom: 15px;
+            font-style: italic;
+            color: #607d8b;
+            font-size: 0.95rem;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        /* Sentence Layout */
+        .sentence-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.2rem;
+            color: #263238;
+        }
+
+        /* Dropdown Styling */
+        select {
+            appearance: none;
+            background-color: #f5f5f5;
+            border: 2px solid #b0bec5;
+            border-radius: 6px;
+            padding: 8px 30px 8px 10px;
+            font-size: 1.1rem;
+            font-family: inherit;
+            cursor: pointer;
+            color: #333;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23607d8b%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+            background-repeat: no-repeat;
+            background-position: right .7em top 50%;
+            background-size: .65em auto;
+            min-width: 90px;
+            transition: border-color 0.3s, background-color 0.3s;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        /* Validation States */
+        select.correct {
+            border-color: var(--success);
+            background-color: #e8f5e9;
+            color: #1b5e20;
+            pointer-events: none; /* Lock input */
+        }
+
+        select.wrong {
+            border-color: var(--error);
+            background-color: #ffebee;
+            color: #b71c1c;
+            animation: shake 0.4s;
+        }
+
+        /* Message Box per Question */
+        .msg-box {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            min-height: 20px;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-5px); }
+            40% { transform: translateX(5px); }
+            60% { transform: translateX(-5px); }
+            80% { transform: translateX(5px); }
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            min-width: 150px;
+        }
+
+        .btn-reset { background-color: #90a4ae; color: white; }
+        .btn-reset:hover { background-color: #78909c; }
+
+        .btn-solve { border: 2px solid var(--primary); color: var(--primary); background: transparent; }
+        .btn-solve:hover { background-color: #e0f2f1; }
+
+        @media (max-width: 600px) {
+            .container { padding: 15px; }
+            .sentence-row { font-size: 1rem; }
+            select { padding: 6px 25px 6px 8px; font-size: 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Präpositionen wählen</h1>
+        <div class="subtitle">
+            Wählen Sie die <strong>richtige Präposition</strong> aus der Liste.
+        </div>
+    </header>
+
+    <div id="quiz-area">
+        <!-- Fragen werden hier generiert -->
+    </div>
+
+    <div class="controls">
+        <button class="btn-reset" onclick="initQuiz()">Neu starten</button>
+        <button class="btn-solve" onclick="showSolutions()">Lösungen anzeigen</button>
+    </div>
+</div>
+
+<script>
+    // Alle verfügbaren Präpositionen für das Dropdown
+    const prepositionOptions = ["---", "с", "о", "к", "от", "на", "без", "для", "по", "перед", "над"];
+
+    // Die 10 Aufgaben
+    const questions = [
+        {
+            correctPrep: "по",
+            context: "Они скучают",
+            word1: "друг",
+            word2: "другу", // Dativ
+            trans: "Sie vermissen einander."
+        },
+        {
+            correctPrep: "с",
+            context: "Мы не говорим",
+            word1: "друг",
+            word2: "другом", // Instrumental
+            trans: "Wir sprechen nicht miteinander."
+        },
+        {
+            correctPrep: "о",
+            context: "Вы думаете",
+            word1: "друг",
+            word2: "друге", // Präpositiv
+            trans: "Ihr denkt aneinander (übereinander)."
+        },
+        {
+            correctPrep: "к",
+            context: "Мы часто ходим",
+            word1: "друг",
+            word2: "другу", // Dativ
+            trans: "Wir gehen oft zueinander."
+        },
+        {
+            correctPrep: "от",
+            context: "Они живут далеко",
+            word1: "друг",
+            word2: "друга", // Genitiv
+            trans: "Sie wohnen weit voneinander entfernt."
+        },
+        {
+            correctPrep: "на",
+            context: "Они смотрят",
+            word1: "друг",
+            word2: "друга", // Akkusativ
+            trans: "Sie schauen einander an."
+        },
+        {
+            correctPrep: "без",
+            context: "Жить не можем",
+            word1: "друг",
+            word2: "друга", // Genitiv
+            trans: "Wir können nicht ohne einander leben."
+        },
+        {
+            correctPrep: "для",
+            context: "Они живут",
+            word1: "друг",
+            word2: "друга", // Genitiv
+            trans: "Sie leben füreinander."
+        },
+        {
+            correctPrep: "перед",
+            context: "Мы извинились",
+            word1: "друг",
+            word2: "другом", // Instrumental
+            trans: "Wir haben uns voreinander entschuldigt."
+        },
+        {
+            correctPrep: "над",
+            context: "Они смеются",
+            word1: "друг",
+            word2: "другом", // Instrumental
+            trans: "Sie lachen übereinander."
+        }
+    ];
+
+    function initQuiz() {
+        const area = document.getElementById('quiz-area');
+        area.innerHTML = "";
+
+        questions.forEach((q, index) => {
+            const card = document.createElement('div');
+            card.className = 'question-card';
+            card.id = `q-${index}`;
+
+            // Info
+            const info = document.createElement('div');
+            info.className = 'info-row';
+            info.textContent = `${index + 1}. ${q.trans}`;
+
+            // Sentence Row
+            const sentence = document.createElement('div');
+            sentence.className = 'sentence-row';
+
+            // 1. Context
+            const ctxSpan = document.createElement('span');
+            ctxSpan.textContent = q.context;
+            sentence.appendChild(ctxSpan);
+
+            // 2. Word 1 (друг)
+            const w1Span = document.createElement('span');
+            w1Span.textContent = q.word1;
+            sentence.appendChild(w1Span);
+
+            // 3. Dropdown (In der Mitte)
+            const sel = createDropdown(index);
+            sentence.appendChild(sel);
+
+            // 4. Word 2 (Ending)
+            const w2Span = document.createElement('span');
+            w2Span.textContent = q.word2 + ".";
+            sentence.appendChild(w2Span);
+
+            // Message area
+            const msgBox = document.createElement('div');
+            msgBox.className = 'msg-box';
+            msgBox.id = `msg-${index}`;
+
+            card.appendChild(info);
+            card.appendChild(sentence);
+            card.appendChild(msgBox);
+            area.appendChild(card);
+        });
+    }
+
+    function createDropdown(qIndex) {
+        const select = document.createElement('select');
+        select.dataset.qIndex = qIndex;
+
+        // Populate options
+        prepositionOptions.forEach(opt => {
+            const option = document.createElement('option');
+            option.value = opt;
+            option.textContent = opt;
+            select.appendChild(option);
+        });
+
+        // Event Listener on Change
+        select.addEventListener('change', (e) => checkSelection(e.target));
+
+        return select;
+    }
+
+    function checkSelection(selectElement) {
+        const qIndex = parseInt(selectElement.dataset.qIndex);
+        const val = selectElement.value;
+        const q = questions[qIndex];
+        const msgBox = document.getElementById(`msg-${qIndex}`);
+
+        // Reset styles first
+        selectElement.classList.remove('wrong', 'correct');
+        msgBox.textContent = "";
+
+        // Fall: "---"
+        if (val === "---") return;
+
+        // Prüfung
+        if (val === q.correctPrep) {
+            // RICHTIG
+            selectElement.classList.add('correct');
+            showMessage(msgBox, "Richtig!", "green");
+        } else {
+            // FALSCH
+            selectElement.classList.add('wrong');
+            showMessage(msgBox, `Falsch. "${val}" ist hier nicht korrekt.`, "red");
+        }
+    }
+
+    function showMessage(element, text, color) {
+        element.textContent = text;
+        element.style.color = color === "green" ? "var(--success)" : "var(--error)";
+    }
+
+    function showSolutions() {
+        questions.forEach((q, index) => {
+            const card = document.getElementById(`q-${index}`);
+            const select = card.querySelector('select');
+            const msgBox = document.getElementById(`msg-${index}`);
+
+            // Reset
+            select.classList.remove('wrong', 'correct');
+
+            // Set Correct
+            select.value = q.correctPrep;
+            select.classList.add('correct');
+            
+            showMessage(msgBox, "Lösung angezeigt.", "green");
+        });
+    }
+
+    // Start
+    initQuiz();
+
+</script>
+
+</body>
+</html>
