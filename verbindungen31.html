@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Russisch: Endungen-Matching mit Nummern</title>
+    <style>
+        :root {
+            --primary: #3949ab;
+            --bg-color: #f5f7fa;
+            --card-bg: #ffffff;
+            --text: #2c3e50;
+            --success: #4caf50;
+            --error: #e57373;
+            --selected: #e8eaf6;
+            --border-default: #cfd8dc;
+            --border-hover: #90a4ae;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.5;
+            user-select: none;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: var(--primary);
+            margin: 0 0 10px 0;
+            font-size: 1.8rem;
+        }
+
+        .subtitle {
+            color: #78909c;
+        }
+
+        /* Game Area Grid */
+        .game-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .column {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .col-header {
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            color: #546e7a;
+            letter-spacing: 1px;
+            border-bottom: 2px solid #eceff1;
+            padding-bottom: 5px;
+        }
+
+        /* Card Styling */
+        .item-card {
+            background-color: #fff;
+            border: 2px solid var(--border-default);
+            border-radius: 8px;
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            min-height: 60px;
+            display: flex;
+            align-items: center; /* Vertikal zentrieren */
+            gap: 15px; /* Abstand zwischen Nummer und Text */
+            font-size: 1rem;
+            box-shadow: 0 2px 2px rgba(0,0,0,0.03);
+        }
+
+        .item-card:hover:not(.disabled) {
+            border-color: var(--border-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        /* Number Badge Style */
+        .num-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: #eceff1; /* Default Grau */
+            color: #b0bec5;
+            font-weight: bold;
+            font-size: 1rem;
+            flex-shrink: 0; /* Verhindert Schrumpfen */
+            transition: all 0.3s;
+        }
+
+        /* Nummern-Stile für Verben (links) - immer blau und sichtbar */
+        .item-card[data-type="verb"] .num-badge {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        /* Nummern-Stile für Endungen (rechts) - erst unsichtbar/grau */
+        .item-card[data-type="ending"] .num-badge {
+            background-color: #eceff1;
+            color: transparent; /* Nummer verstecken */
+        }
+
+        /* Wenn Endung gelöst ist: Grün und Nummer sichtbar */
+        .item-card[data-type="ending"].matched .num-badge {
+            background-color: var(--success);
+            color: white;
+        }
+
+        /* Inhalt Text */
+        .content-wrapper {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+            flex-grow: 1;
+        }
+
+        .main-text {
+            font-weight: 600;
+            color: #37474f;
+        }
+
+        .hint-text {
+            font-size: 0.85em;
+            color: #90a4ae;
+            font-style: italic;
+        }
+
+        /* States */
+        .item-card.selected {
+            background-color: var(--selected);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 1px var(--primary);
+        }
+
+        /* Matched State (Green Card border) */
+        .item-card.matched {
+            background-color: #e8f5e9;
+            border-color: var(--success);
+            color: #2e7d32;
+            cursor: default;
+            pointer-events: none;
+        }
+
+        /* Wrong State (Red Animation) */
+        .item-card.wrong {
+            background-color: #ffebee;
+            border-color: var(--error);
+            color: #c62828;
+            animation: shake 0.4s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-5px); }
+            40% { transform: translateX(5px); }
+            60% { transform: translateX(-5px); }
+            80% { transform: translateX(5px); }
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            min-width: 160px;
+        }
+
+        .btn-reset {
+            background-color: #78909c;
+            color: white;
+        }
+        .btn-reset:hover { background-color: #607d8b; }
+
+        .btn-solve {
+            background-color: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+        .btn-solve:hover { background-color: #e8eaf6; }
+
+        .status-msg {
+            text-align: center;
+            height: 20px;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: var(--success);
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .container { padding: 15px; }
+            .game-area { gap: 10px; }
+            .item-card { padding: 8px 10px; font-size: 0.9rem; min-height: 50px; gap: 10px; }
+            .num-badge { width: 24px; height: 24px; font-size: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Endungen-Matching</h1>
+        <div class="subtitle">Verbinden Sie die Paare. Die Nummern helfen Ihnen bei der Lösung.</div>
+    </header>
+
+    <div class="status-msg" id="status-msg"></div>
+
+    <div class="game-area">
+        <!-- Linke Spalte: Verben -->
+        <div class="column" id="col-verbs">
+            <div class="col-header">Verb</div>
+        </div>
+
+        <!-- Rechte Spalte: Endungen -->
+        <div class="column" id="col-endings">
+            <div class="col-header">Endung (Fall)</div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button class="btn-reset" onclick="initGame()">Neu starten</button>
+        <button class="btn-solve" onclick="showSolution()">Lösung anzeigen</button>
+    </div>
+</div>
+
+<script>
+    // Daten mit festen Nummern (1-8)
+    const pairsData = [
+        { num: 1, id: "dat_s", verb: "Звонить", verbTrans: "(anrufen)", ending: "... другу (-у)", caseInfo: "Dativ" },
+        { num: 2, id: "acc_s", verb: "Любить / Видеть", verbTrans: "(lieben/sehen)", ending: "... друга (-а)", caseInfo: "Akkusativ" },
+        { num: 3, id: "ins_s", verb: "Гордиться", verbTrans: "(stolz sein)", ending: "... другом (-ом)", caseInfo: "Instrumental" },
+        { num: 4, id: "pre_o", verb: "Думать о", verbTrans: "(denken über)", ending: "... о друге (-е)", caseInfo: "Präpositiv" },
+        { num: 5, id: "gen_b", verb: "Жить без", verbTrans: "(leben ohne)", ending: "... без друга (-а)", caseInfo: "Genitiv" },
+        { num: 6, id: "ins_p", verb: "Разговаривать с", verbTrans: "(sprechen mit)", ending: "... с другом (-ом)", caseInfo: "Instrumental" },
+        { num: 7, id: "dat_k", verb: "Идти к", verbTrans: "(gehen zu)", ending: "... к другу (-у)", caseInfo: "Dativ" },
+        { num: 8, id: "gen_o", verb: "Получить от", verbTrans: "(erhalten von)", ending: "... от друга (-а)", caseInfo: "Genitiv" }
+    ];
+
+    let selectedVerb = null;
+    let selectedEnding = null;
+    let matchesFound = 0;
+
+    function initGame() {
+        const colVerbs = document.getElementById('col-verbs');
+        const colEndings = document.getElementById('col-endings');
+        const statusMsg = document.getElementById('status-msg');
+        
+        statusMsg.textContent = "";
+        colVerbs.innerHTML = '<div class="col-header">Verb</div>';
+        colEndings.innerHTML = '<div class="col-header">Endung (Fall)</div>';
+        
+        selectedVerb = null;
+        selectedEnding = null;
+        matchesFound = 0;
+
+        // 1. Linke Seite (Verben): Statische Reihenfolge 1-8
+        pairsData.forEach(item => {
+            const card = createCard(item, 'verb');
+            colVerbs.appendChild(card);
+        });
+
+        // 2. Rechte Seite (Endungen): Zufällige Reihenfolge
+        const shuffledEndings = [...pairsData].sort(() => Math.random() - 0.5);
+        shuffledEndings.forEach(item => {
+            const card = createCard(item, 'ending');
+            colEndings.appendChild(card);
+        });
+    }
+
+    function createCard(item, type) {
+        const div = document.createElement('div');
+        div.className = 'item-card';
+        div.dataset.type = type;
+        div.dataset.matchId = item.id;
+        div.dataset.number = item.num; // Wichtig: Nummer speichern
+
+        // Inhalt basierend auf Typ
+        let mainContent = '';
+        let badgeContent = '';
+
+        if (type === 'verb') {
+            mainContent = `
+                <span class="main-text">${item.verb}</span>
+                <span class="hint-text">${item.verbTrans}</span>
+            `;
+            badgeContent = item.num; // Zeige Nummer sofort an
+        } else {
+            mainContent = `
+                <span class="main-text">${item.ending}</span>
+                <span class="hint-text">${item.caseInfo}</span>
+            `;
+            badgeContent = '?'; // Platzhalter, wird via CSS/JS gesteuert
+        }
+
+        div.innerHTML = `
+            <div class="num-badge">${badgeContent}</div>
+            <div class="content-wrapper">
+                ${mainContent}
+            </div>
+        `;
+
+        div.onclick = () => handleCardClick(div);
+        return div;
+    }
+
+    function handleCardClick(card) {
+        if (card.classList.contains('matched')) return;
+
+        const type = card.dataset.type;
+
+        // Visuelle Auswahl
+        if (type === 'verb') {
+            if (selectedVerb) selectedVerb.classList.remove('selected');
+            selectedVerb = card;
+            card.classList.add('selected');
+        } else {
+            if (selectedEnding) selectedEnding.classList.remove('selected');
+            selectedEnding = card;
+            card.classList.add('selected');
+        }
+
+        // CheckMatch wenn beide ausgewählt
+        if (selectedVerb && selectedEnding) {
+            checkMatch();
+        }
+    }
+
+    function checkMatch() {
+        const verbId = selectedVerb.dataset.matchId;
+        const endingId = selectedEnding.dataset.matchId;
+        const number = selectedVerb.dataset.number;
+
+        if (verbId === endingId) {
+            // TREFFER!
+            successAnim(selectedVerb, selectedEnding, number);
+            selectedVerb = null;
+            selectedEnding = null;
+            matchesFound++;
+            
+            if (matchesFound === pairsData.length) {
+                document.getElementById('status-msg').textContent = "Super! Alles richtig zugeordnet.";
+            }
+        } else {
+            // FEHLER!
+            errorAnim(selectedVerb, selectedEnding);
+            setTimeout(() => {
+                if (selectedVerb) selectedVerb.classList.remove('selected');
+                if (selectedEnding) selectedEnding.classList.remove('selected');
+                selectedVerb = null;
+                selectedEnding = null;
+            }, 600);
+        }
+    }
+
+    function successAnim(verbCard, endingCard, number) {
+        verbCard.classList.remove('selected');
+        endingCard.classList.remove('selected');
+        
+        verbCard.classList.add('matched');
+        endingCard.classList.add('matched');
+
+        // Nummer auf der Endungs-Karte anzeigen
+        const badge = endingCard.querySelector('.num-badge');
+        badge.textContent = number; 
+    }
+
+    function errorAnim(el1, el2) {
+        el1.classList.add('wrong');
+        el2.classList.add('wrong');
+        setTimeout(() => {
+            el1.classList.remove('wrong');
+            el2.classList.remove('wrong');
+        }, 600);
+    }
+
+    function showSolution() {
+        const colVerbs = document.getElementById('col-verbs');
+        const colEndings = document.getElementById('col-endings');
+        const statusMsg = document.getElementById('status-msg');
+
+        statusMsg.textContent = "Lösung angezeigt (Nummer entspricht Paar)";
+        
+        // Listen leeren
+        colVerbs.innerHTML = '<div class="col-header">Verb</div>';
+        colEndings.innerHTML = '<div class="col-header">Endung (Fall)</div>';
+
+        // Listen neu und sortiert aufbauen (1-8)
+        pairsData.forEach(item => {
+            // Verb Karte
+            const vCard = createCard(item, 'verb');
+            vCard.classList.add('matched');
+            colVerbs.appendChild(vCard);
+
+            // Endung Karte (mit sichtbarer Nummer)
+            const eCard = createCard(item, 'ending');
+            eCard.classList.add('matched');
+            // Nummer manuell setzen, da matched
+            eCard.querySelector('.num-badge').textContent = item.num;
+            colEndings.appendChild(eCard);
+        });
+    }
+
+    // Start
+    initGame();
+
+</script>
+
+</body>
+</html>
