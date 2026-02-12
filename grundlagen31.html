@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Russisch Grammatik: друг друга</title>
+    <!-- Polyfill für Drag & Drop auf Touch-Geräten -->
+    <script src="https://cdn.jsdelivr.net/npm/drag-drop-touch@1.3.1/DragDropTouch.js"></script>
+    <style>
+        :root {
+            --primary-color: #3f51b5;
+            --secondary-color: #e8eaf6;
+            --accent-color: #ff4081;
+            --text-color: #333;
+            --success-color: #4caf50;
+            --error-color: #f44336;
+            --border-radius: 8px;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        h1, h2, h3 {
+            color: var(--primary-color);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .intro-box {
+            background-color: var(--secondary-color);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            border-left: 5px solid var(--primary-color);
+            margin-bottom: 40px;
+        }
+
+        .example-list {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .example-list li {
+            background: white;
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 4px;
+        }
+
+        .task-card {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: var(--border-radius);
+            background-color: #fff;
+        }
+
+        .task-header {
+            font-weight: bold;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .task-number {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.9em;
+        }
+
+        /* Controls */
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .btn-check {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        .btn-check:hover { background-color: #303f9f; }
+
+        .btn-reset {
+            background-color: #9e9e9e;
+            color: white;
+        }
+        .btn-reset:hover { background-color: #757575; }
+
+        .btn-solve {
+            background-color: transparent;
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+        .btn-solve:hover { background-color: var(--secondary-color); }
+
+        /* Input Elements */
+        select {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            background: white;
+        }
+
+        .feedback-msg {
+            margin-top: 10px;
+            font-weight: bold;
+            min-height: 24px;
+        }
+        
+        .correct { color: var(--success-color); }
+        .wrong { color: var(--error-color); }
+
+        /* Multiple Choice */
+        .mc-option {
+            display: block;
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #eee;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .mc-option:hover { background-color: #f9f9f9; }
+        .mc-option input { margin-right: 10px; }
+
+        /* Drag and Drop Styles */
+        .dnd-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .draggable-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 15px;
+            background-color: #f0f0f0;
+            border-radius: 4px;
+            min-height: 50px;
+        }
+
+        .draggable {
+            background-color: white;
+            border: 1px solid #bbb;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: grab;
+            user-select: none;
+            box-shadow: 0 2px 2px rgba(0,0,0,0.1);
+        }
+
+        .draggable:active {
+            cursor: grabbing;
+        }
+
+        .drop-zone {
+            display: inline-block;
+            min-width: 120px;
+            min-height: 40px;
+            border-bottom: 2px dashed #999;
+            vertical-align: middle;
+            margin: 0 5px;
+            background-color: #fffde7;
+            text-align: center;
+            padding-top: 5px;
+        }
+
+        .drop-zone.filled {
+            border-bottom: 2px solid var(--primary-color);
+            background-color: transparent;
+        }
+
+        /* Sorting / Matching specific */
+        .match-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            gap: 10px;
+        }
+        .match-static {
+            width: 40%;
+            font-weight: bold;
+        }
+        .match-drop {
+            flex-grow: 1;
+            background-color: #fffde7;
+            border: 2px dashed #ccc;
+            padding: 5px;
+            min-height: 38px;
+            border-radius: 4px;
+        }
+
+        /* Visual Feedback Classes */
+        .input-correct { border-color: var(--success-color); background-color: #e8f5e9; }
+        .input-wrong { border-color: var(--error-color); background-color: #ffebee; }
+
+        @media (max-width: 600px) {
+            .container { padding: 15px; }
+            .match-row { flex-direction: column; align-items: flex-start; }
+            .match-static { width: 100%; }
+            .match-drop { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Russische Grammatik: Verwendung von друг друга</h1>
+
+    <div class="intro-box">
+        <h2>Einführung</h2>
+        <p>Das russische <strong>друг друга</strong> bedeutet „einander“. Es besteht aus zwei Teilen. Das erste Wort (<em>друг</em>) bleibt <strong>immer unverändert</strong> im Nominativ. Nur das zweite Wort wird dekliniert, abhängig vom Fall, den das Verb verlangt.</p>
+        
+        <h3>Wichtige Regel für Präpositionen:</h3>
+        <p>Wenn eine Präposition (wie <em>mit, über, von, zu</em>) benötigt wird, steht diese <strong>zwischen</strong> den beiden Wörtern!</p>
+        <p><em>Formel: друг + [Präposition] + [dekliniertes Wort]</em></p>
+
+        <ul class="example-list">
+            <li><strong>Akkusativ/Genitiv:</strong> Мы любим <strong>друг друга</strong>. (Wir lieben einander.)</li>
+            <li><strong>Dativ:</strong> Они помогают <strong>друг другу</strong>. (Sie helfen einander.)</li>
+            <li><strong>Instrumental (mit Präposition):</strong> Мы разговариваем <strong>друг с другом</strong>. (Wir unterhalten uns miteinander.)</li>
+            <li><strong>Präpositiv (mit Präposition):</strong> Они думают <strong>друг о друге</strong>. (Sie denken aneinander.)</li>
+        </ul>
+    </div>
+
+    <!-- AUFGABE 1: Dropdown Basic -->
+    <div class="task-card" id="task1">
+        <div class="task-header">
+            <span>Wählen Sie die richtige Endung (Basisformen).</span>
+            <span class="task-number">1 / 12</span>
+        </div>
+        <p>1. Мы хорошо понимаем друг <select data-correct="друга"><option value="">...</option><option value="друга">друга</option><option value="другу">другу</option><option value="другом">другом</option></select> (Akkusativ).</p>
+        <p>2. Вы должны верить друг <select data-correct="другу"><option value="">...</option><option value="друга">друга</option><option value="другу">другу</option><option value="другом">другом</option></select> (Dativ).</p>
+        <p>3. Они не могут жить друг без <select data-correct="друга"><option value="">...</option><option value="друга">друга</option><option value="другу">другу</option><option value="друге">друге</option></select> (Genitiv).</p>
+        
+        <div class="feedback-msg"></div>
+        <div class="controls">
+            <button class="btn-check" onclick="checkDropdowns('task1')">Überprüfen</button>
+            <button class="btn-reset" onclick="resetTask('task1')">Zurücksetzen</button>
+            <button class="btn-solve" onclick="solveDropdowns('task1')">Lösung anzeigen</button>
+        </div>
+    </div>
+
+    <!-- AUFGABE 2: Multiple Choice - Präposition Position -->
+    <div class="task-card" id="task2">
+        <div class="task-header">
+            <span>Wo steht die Präposition richtig? (miteinander)</span>
+            <span class="task-number">2 / 12</span>
+        </div>
+        <p>„Wir sprechen miteinander.“</p>
+        <label class="mc-option"><input type="radio" name="t2" value="wrong"> с друг другом</label>
+        <label class="mc-option"><input type="radio" name="t2" value="correct"> друг с другом</label>
+        <label class="mc-option"><input type="radio" name="t2" value="wrong"> друг с другу</label>
+
+        <div class="feedback-msg"></div>
+        <div class="controls">
+            <button class="btn-check" onclick="checkMC('task2')">Überprüfen</button>
+            <button class="btn-reset" onclick="resetMC('task2')">Zurücksetzen</button>
+            <button class="btn-solve" onclick="solveMC('task2', 1)">Lösung anzeigen</button>
+        </div>
+    </div>
+
+    <!-- AUFGABE 3: Drag & Drop - Sätze bilden -->
+    <div class="task-card" id="task3">
+        <div class="task-header">
+            <span>Ordnen Sie die Wörter zum korrekten Satz.</span>
+            <span class="task-number">3 / 12</span>
+        </div>
+        <div class="dnd-container">
+            <div class="drop-area-sentence" style="margin-bottom: 10px;">
+                <!-- Zielzonen -->
+                <span class="drop-zone" data-expect="Они"></span>
+                <span class="drop-zone" data-expect="смотрят"></span>
+                <span class="drop-zone" data-expect="друг"></span>
+                <span class="drop-zone" data-expect="на"></span>
+                <span class="drop-zone" data-expect="друга"></span>.
+            </div>
+            <div class="draggable-items" id="t3-items">
+                <span class="draggable" draggable="true" ondragstart="drag(event)" id="t3-w1">друг</span>
+                <span class="draggable" draggable="true" ondragstart="drag(event)" id="t3-w2">Они</span>
+                <span class="draggable" draggable="true" ondragstart="drag(event)" id="t3-w3">друга</span>
+                <span class="draggable" draggable="true" ondragstart="drag(event)" id="t3-w4">смотрят</span>
+                <span class="draggable" draggable="true" ondragstart="drag(event)" id="t3-w5">на</span>
+            </div>
+        </div>
+
+        <div class="feedback-msg"></div>
+        <div class="controls">
+            <button class="btn-check" onclick="checkDnD('task3')">Überprüfen</button>
+            <button class="btn-reset" onclick="resetDnD('task3', 't3-items')">Zurücksetzen</button>
+            <button class="btn-solve" onclick="solveDnD('task3', 't3-items')">Lösung anzeigen</button>
+        </div>
+    </div>
+
+    <!-- AUFGABE 4: Dropdown - Verben und Fälle -->
+    <div class="task-card" id="task4">
+        <div class="task-header">
+            <span>Welches Verb passt zur Form von „друг друга“?</span>
+            <span class="task-number">4 / 12</span>
+        </div>
+        <p>1. Мы поздравляем <select data-correct="друг друга"><option value="">...</option><option value="друг друга">друг друга</option><option value="друг другу">друг другу</option></select> (gratulieren - Wen?).</p>
+        <p>2. Вы звоните <select data-correct="друг другу"><option value="">...</option><option value="друг друга">друг друга</option><option value="друг другу">друг другу</option></select> (anrufen - Wem?).</p>
+        <p>3. Они гордятся <select data-correct="друг другом"><option value="">...</option><option value="друг другом">друг другом</option><option value="друг о друге">друг о друге</option></select> (stolz sein - Womit/Wem?).</p>
+
+        <div class="feedback-msg"></div>
+        <div class="controls">
+            <button class="btn-check" onclick="checkDropdowns('task4')">Überprüfen</button>
+            <button class="btn-reset" onclick="resetTask('task4')">Zurücksetzen</button>
+            <button class="btn-solve" onclick="solveDropdowns('task4')">Lösung anzeigen</button>
+        </div>
+    </div>
+
+    <!-- AUFGABE 5: Multiple Choice - Übersetzung -->
+    <div class="task-card" id="task5">
+        <div class="task-header">
+            <span>Wie übersetzt man „übereinander“ (z.B. sprechen)?</span>
+            <span class="task-number">5 / 12</span>
+        </div>
+        <label class="mc-option"><input type="radio" name="t5" value="wrong"> друг на друга</label>
+        <label class="mc-option"><input type="radio" name="t5" value="correct"> друг о друге</label>
+        <label class="mc-option"><input type="radio" name="t5" value="wrong"> друг про друга</label> <!-- Umgangssprachlich möglich, aber grammatisch ist o+Präp Standard für Lerner -->
+        <label class="mc-option"><input type="radio" name="t5" value="wrong"> о друг друге</label>
+
+        <div class="feedback-msg"></div>
+        <div class="controls">
+            <button class="btn-check" onclick="checkMC('task5')">Überprüfen</button>
+            <button class="btn-reset" onclick="resetMC('task5')">Zurücksetzen</button>
+            <button class="btn-solve" onclick="solveMC('task5', 1)">Lösung anzeigen</button>
+        </div>
+    </div>
+
+    <!-- AUFGABE 6: Drag & Drop - Präpositionen einsetzen -->
+    <div class="task-card" id="task6">
+        <div class="task-header">
+            <span>Ziehen Sie die richtige Präposition in die Lücke.</span>
+            <span class="task-number">6 / 12</span>
+        </div>
+        <div class="match-row">
+            <span class="match-static">Sie wohnen weit voneinander entfernt.</span>
+            <span>друг <span class="drop-zone" data-expect="от"></span> друга</span>
+        </div>
+        <div class="match-row">
+            <span class="match-static">Sie gehen oft zueinander.</span>
+            <span>друг <span class="drop-zone" data-expect="к"></span> другу</span>
+        </div>
+        <div class="match-row">
+            <span class="match-static">Sie ärgern sich übereinander (auf).</span>
+            <span>друг <span class="drop-zone" data-expect="на"></span> друга</span>
+        </div>
+
+        <div class="draggable-items" id="t6-items">
+            <span class="draggable" draggable="true" ondragstart="drag(event)" id="t6-p1">к</span>
+            <span class="draggable" draggable="true" ondragstart="drag(event)" id="t6-p2">от</span>
+            <span class="draggable" draggable="true" ondragstart="drag(event)" id="t6-p3">на</span>
+            <span class="draggable" draggable="true" ondragstart="drag(event)" id="t6-p4">с</span>
+        </div>
+
+        <div class="feedback-msg"></div>
+        <div class="controls">
+            <button class="btn-check" onclick="checkDnD('task6')">Überprüfen</button>
+            <button class="btn-reset" onclick="resetDnD('task6', 't6-items')">Zurücksetzen</button>
+            <button class="btn-solve" onclick="solveDnD('task6', 't6-items')">Lösung anzeigen</button>
+        </div>
+    </div>
+
+    <!-- AUFGABE 7: Dropdown - Dialog ergänzen -->
+    <div class="task-card" id="task7">
+        <div class="task-header">
+            <span>Ergänzen Sie den kurzen Dialog.</span>
+            <span class="task-number">7 / 12</span>
+        </div>
+        <p>- "Anna und Peter streiten oft. Sie schreien oft <select data-correct="друг на друга"><option value="">...</option><option value="друг на друга">друг на друга</option><option value="друг друга">друг друга</option></select> (aufeinander)."</p>
+        <p>- "Ja, aber sie lieben <select data-correct="друг друга"><option value="">...</option><option value="друг другом">друг другом</option><option value="друг друга">друг друга</option></select> (einander) trotzdem."</p>
+
+        <div class="feedback-msg"></div>
+        <div class="controls">
+            <button class="btn-check" onclick="checkDropdowns('task7')">Überprüfen</button>
+            <button class="btn-reset" onclick="resetTask('task7')">Zurücksetzen</button>
+            <button class="btn-solve" onclick="solveDropdowns('task7')">Lösung anzeigen</button>
+        </div>
+    </div>
+
+    <!-- AUFGABE 8: Multiple Choice - Fehlersuche -->
+    <div class="task-card" id="task8">
+        <div class="task-header">
+            <span>Welcher Satz ist grammatikalisch FALSCH?</span>
+            <span class="task-number">8 / 12</span>
+        </div>
+        <label class="mc-option"><input type="radio" name="t8" value="wrong"> Мы всё знаем друг о друге.</label>
+        <label class="mc-option"><input type="radio" name="t8" value="correct"> Они познакомились с друг другом.</label> <!-- Falsch, muss 'друг с другом' sein -->
+        <label class="mc-option"><input type="radio" name="t8" value="wrong"> Вы часто дарите друг другу подарки.</label>
+
+        <div class="feedback-msg"></div>
+        <div class="controls">
+            <button class="btn-check" onclick="checkMC('task8')">Überprüfen</button>
+            <button class="btn-reset" onclick="resetMC('task8')">Zurücksetzen</button>
+            <button class="btn-solve" onclick="solveMC('task8', 1)">Lösung anzeigen</button>
+        </div>
+    </div>
+
+    <!-- AUFGABE 9: Drag & Drop - Matching Deutsch-Russisch -->
+    <div class="task-card" id="task9">
+        <div class="task-header">
+            <span>Verbinden Sie die Paare.</span>
+            <span class="task-number">9 / 12</span>
+        </div>
+        <div class="match-row">
+            <span class="match-static">füreinander (für wen?)</span>
+            <span class="match-drop drop-zone" data-expect="друг для друга"></span>
+        </div>
+        <div class="match-row">
+            <span class="match-static">voreinander (vor wem? Angst haben)</span>
+            <span class="match-drop drop-zone" data-expect="друг перед другом"></span>
+        </div>
+        <div class="match-row">
+            <span class="match-static">voneinander (von wem? Brief erhalten)</span>
+            <span class="match-drop drop-zone" data-expect="друг от друга"></span>
+        </div>
+
+        <div class="draggable-items" id="t9-items">
+            <span class="draggable" draggable="true" ondragstart="drag(event)" id="t9-w1">друг от друга</span>
+            <span class="draggable" draggable="true" ondragstart="drag(event)" id="t9-w2">друг для друга</span>
+            <span class="draggable" draggable="true" ondragstart="drag(event)" id="t9-w3">друг перед другом</span>
+        </div>
+
+        <div class="feedback-msg"></div>
+        <div class="controls">
+            <button class="btn-check" onclick="checkDnD('task9')">Überprüfen</button>
+            <button class="btn-reset" onclick="resetDnD('task9', 't9-items')">Zurücksetzen</button>
+            <button class="btn-solve" onclick="solveDnD('task9', 't9-items')">Lösung anzeigen</button>
+        </div>
+    </div>
+
+    <!-- AUFGABE 10: Multiple Choice - Kasusbestimmung -->
+    <div class="task-card" id="task10">
+        <div class="task-header">
+            <span>In welchem Fall steht „друг друга“ hier?</span>
+            <span class="task-number">10 / 12</span>
+        </div>
+        <p>„Мы не можем жить друг без друга.“</p>
+        <label class="mc-option"><input type="radio" name="t10" value="correct"> Genitiv (2. Fall)</label>
+        <label class="mc-option"><input type="radio" name="t10" value="wrong"> Dativ (3. Fall)</label>
+        <label class="mc-option"><input type="radio" name="t10" value="wrong"> Instrumental (5. Fall)</label>
+
+        <div class="feedback-msg"></div>
+        <div class="controls">
+            <button class="btn-check" onclick="checkMC('task10')">Überprüfen</button>
+            <button class="btn-reset" onclick="resetMC('task10')">Zurücksetzen</button>
+            <button class="btn-solve" onclick="solveMC('task10', 0)">Lösung anzeigen</button>
+        </div>
+    </div>
+
+    <!-- AUFGABE 11: Dropdown - Gemischte Übung -->
+    <div class="task-card" id="task11">
+        <div class="task-header">
+            <span>Wählen Sie die korrekte Form.</span>
+            <span class="task-number">11 / 12</span>
+        </div>
+        <p>1. У них нет секретов <select data-correct="друг от друга"><option value="">...</option><option value="друг от друга">друг от друга</option><option value="от друг друга">от друг друга</option></select> (voneinander).</p>
+        <p>2. Они всегда соглашаются <select data-correct="друг с другом"><option value="">...</option><option value="друг с другом">друг с другом</option><option value="друг другу">друг другу</option></select> (miteinander).</p>
+
+        <div class="feedback-msg"></div>
+        <div class="controls">
+            <button class="btn-check" onclick="checkDropdowns('task11')">Überprüfen</button>
+            <button class="btn-reset" onclick="resetTask('task11')">Zurücksetzen</button>
+            <button class="btn-solve" onclick="solveDropdowns('task11')">Lösung anzeigen</button>
+        </div>
+    </div>
+
+    <!-- AUFGABE 12: Drag & Drop - Satzbau -->
+    <div class="task-card" id="task12">
+        <div class="task-header">
+            <span>Bauen Sie den Satz: "Wir gehen aufeinander zu."</span>
+            <span class="task-number">12 / 12</span>
+        </div>
+        <div class="dnd-container">
+            <div class="drop-area-sentence">
+                <span class="drop-zone" data-expect="Мы"></span>
+                <span class="drop-zone" data-expect="идём"></span>
+                <span class="drop-zone" data-expect="друг"></span>
+                <span class="drop-zone" data-expect="навстречу"></span>
+                <span class="drop-zone" data-expect="другу"></span>.
+            </div>
+            <div class="draggable-items" id="t12-items">
+                <span class="draggable" draggable="true" ondragstart="drag(event)" id="t12-w1">другу</span>
+                <span class="draggable" draggable="true" ondragstart="drag(event)" id="t12-w2">навстречу</span>
+                <span class="draggable" draggable="true" ondragstart="drag(event)" id="t12-w3">Мы</span>
+                <span class="draggable" draggable="true" ondragstart="drag(event)" id="t12-w4">друг</span>
+                <span class="draggable" draggable="true" ondragstart="drag(event)" id="t12-w5">идём</span>
+            </div>
+        </div>
+        <div class="feedback-msg"></div>
+        <div class="controls">
+            <button class="btn-check" onclick="checkDnD('task12')">Überprüfen</button>
+            <button class="btn-reset" onclick="resetDnD('task12', 't12-items')">Zurücksetzen</button>
+            <button class="btn-solve" onclick="solveDnD('task12', 't12-items')">Lösung anzeigen</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    /* --- Allgemeine Funktionen --- */
+    function setFeedback(containerId, isCorrect, message) {
+        const feedbackDiv = document.querySelector(`#${containerId} .feedback-msg`);
+        feedbackDiv.textContent = message;
+        feedbackDiv.className = "feedback-msg " + (isCorrect ? "correct" : "wrong");
+    }
+
+    function clearFeedback(containerId) {
+        const feedbackDiv = document.querySelector(`#${containerId} .feedback-msg`);
+        feedbackDiv.textContent = "";
+        feedbackDiv.className = "feedback-msg";
+    }
+
+    /* --- Dropdown Logic --- */
+    function checkDropdowns(taskId) {
+        const selects = document.querySelectorAll(`#${taskId} select`);
+        let allCorrect = true;
+        let answered = 0;
+
+        selects.forEach(sel => {
+            if (sel.value) answered++;
+            if (sel.value === sel.dataset.correct) {
+                sel.classList.add('input-correct');
+                sel.classList.remove('input-wrong');
+            } else {
+                sel.classList.add('input-wrong');
+                sel.classList.remove('input-correct');
+                allCorrect = false;
+            }
+        });
+
+        if (answered < selects.length) {
+            setFeedback(taskId, false, "Bitte füllen Sie alle Felder aus.");
+            return;
+        }
+
+        if (allCorrect) {
+            setFeedback(taskId, true, "Ausgezeichnet! Alles richtig.");
+        } else {
+            setFeedback(taskId, false, "Einige Antworten sind falsch.");
+        }
+    }
+
+    function solveDropdowns(taskId) {
+        const selects = document.querySelectorAll(`#${taskId} select`);
+        selects.forEach(sel => {
+            sel.value = sel.dataset.correct;
+            sel.classList.remove('input-wrong');
+            sel.classList.add('input-correct');
+        });
+        setFeedback(taskId, true, "Lösung angezeigt.");
+    }
+
+    function resetTask(taskId) {
+        const selects = document.querySelectorAll(`#${taskId} select`);
+        selects.forEach(sel => {
+            sel.value = "";
+            sel.className = "";
+        });
+        clearFeedback(taskId);
+    }
+
+    /* --- Multiple Choice Logic --- */
+    function checkMC(taskId) {
+        const radios = document.getElementsByName(taskId.replace('task', 't'));
+        let selected = null;
+        radios.forEach(r => { if(r.checked) selected = r; });
+
+        if (!selected) {
+            setFeedback(taskId, false, "Bitte wählen Sie eine Option.");
+            return;
+        }
+
+        if (selected.value === "correct") {
+            setFeedback(taskId, true, "Richtig!");
+        } else {
+            setFeedback(taskId, false, "Leider falsch. Versuchen Sie es noch einmal.");
+        }
+    }
+
+    function resetMC(taskId) {
+        const radios = document.getElementsByName(taskId.replace('task', 't'));
+        radios.forEach(r => r.checked = false);
+        clearFeedback(taskId);
+    }
+
+    function solveMC(taskId, correctIndex) {
+        const radios = document.querySelectorAll(`#${taskId} input[type=radio]`);
+        // Find the one with value "correct"
+        radios.forEach(r => {
+            if (r.value === "correct") r.checked = true;
+        });
+        setFeedback(taskId, true, "Lösung angezeigt.");
+    }
+
+    /* --- Drag and Drop Logic --- */
+    
+    function allowDrop(ev) {
+        ev.preventDefault();
+    }
+
+    function drag(ev) {
+        ev.dataTransfer.setData("text", ev.target.id);
+    }
+
+    // Add event listeners for drop zones
+    document.querySelectorAll('.drop-zone').forEach(zone => {
+        zone.addEventListener('dragover', allowDrop);
+        zone.addEventListener('drop', function(ev) {
+            ev.preventDefault();
+            const data = ev.dataTransfer.getData("text");
+            const draggedElement = document.getElementById(data);
+            
+            if(!draggedElement) return;
+
+            // If dropping into a zone that already has an item, swap them? 
+            // Simpler: Allow dropping only if zone is essentially part of the task.
+            // But since we have a container, we just append.
+            // Check if we are dropping directly into the zone
+            if (ev.target.classList.contains('drop-zone')) {
+                // If zone already has a child (that is a draggable item), move old child back to container?
+                // Simplification: Just append.
+                if (ev.target.children.length > 0) {
+                   // Optional: Move existing item back to list
+                }
+                ev.target.appendChild(draggedElement);
+            }
+        });
+        
+        // Touch support fix logic handles internally by polyfill mostly, but 
+        // we ensure click-to-move fallback isn't needed if polyfill works.
+    });
+
+    // Also allow dropping back to the original container
+    document.querySelectorAll('.draggable-items').forEach(container => {
+        container.addEventListener('dragover', allowDrop);
+        container.addEventListener('drop', function(ev) {
+            ev.preventDefault();
+            const data = ev.dataTransfer.getData("text");
+            const draggedElement = document.getElementById(data);
+            if(draggedElement) {
+                container.appendChild(draggedElement);
+            }
+        });
+    });
+
+    function checkDnD(taskId) {
+        const zones = document.querySelectorAll(`#${taskId} .drop-zone`);
+        let allCorrect = true;
+        let empty = false;
+
+        zones.forEach(zone => {
+            if (zone.children.length === 0) {
+                empty = true;
+                zone.classList.remove('input-correct', 'input-wrong');
+            } else {
+                const item = zone.children[0];
+                const itemText = item.innerText.trim();
+                const expected = zone.dataset.expect;
+
+                if (itemText === expected) {
+                    zone.classList.add('input-correct');
+                    zone.classList.remove('input-wrong');
+                } else {
+                    zone.classList.add('input-wrong');
+                    zone.classList.remove('input-correct');
+                    allCorrect = false;
+                }
+            }
+        });
+
+        if (empty) {
+            setFeedback(taskId, false, "Bitte ordnen Sie alle Elemente zu.");
+        } else if (allCorrect) {
+            setFeedback(taskId, true, "Perfekt gelöst!");
+        } else {
+            setFeedback(taskId, false, "Noch nicht ganz richtig.");
+        }
+    }
+
+    function resetDnD(taskId, itemsContainerId) {
+        const container = document.getElementById(itemsContainerId);
+        const draggables = document.querySelectorAll(`#${taskId} .draggable`);
+        
+        // Remove classes from zones
+        document.querySelectorAll(`#${taskId} .drop-zone`).forEach(z => {
+            z.className = "drop-zone" + (z.classList.contains('match-drop') ? ' match-drop' : '');
+        });
+
+        // Move all items back to container and randomize slightly or just append
+        draggables.forEach(el => container.appendChild(el));
+        
+        // Randomize order in container
+        for (let i = container.children.length; i >= 0; i--) {
+            container.appendChild(container.children[Math.random() * i | 0]);
+        }
+
+        clearFeedback(taskId);
+    }
+
+    function solveDnD(taskId, itemsContainerId) {
+        const zones = document.querySelectorAll(`#${taskId} .drop-zone`);
+        const draggables = Array.from(document.querySelectorAll(`#${taskId} .draggable`));
+
+        zones.forEach(zone => {
+            const expected = zone.dataset.expect;
+            // Find the element with this text
+            const correctEl = draggables.find(el => el.innerText.trim() === expected);
+            if (correctEl) {
+                zone.appendChild(correctEl);
+                zone.classList.add('input-correct');
+                zone.classList.remove('input-wrong');
+            }
+        });
+        setFeedback(taskId, true, "Lösung angezeigt.");
+    }
+
+</script>
+
+</body>
+</html>
