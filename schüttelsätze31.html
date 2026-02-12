@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Russisch: Die Sandwich-Struktur (10 Sätze)</title>
+    <style>
+        :root {
+            --primary: #FF9800; /* Orange für das "Sandwich"-Thema */
+            --primary-dark: #F57C00;
+            --secondary: #3f51b5;
+            --bg-color: #fdfbf7;
+            --text: #37474f;
+            --success: #4caf50;
+            --error: #f44336;
+            --block-bg: #ffffff;
+            --block-border: #bdbdbd;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            position: relative;
+            min-height: 500px; /* Feste Mindesthöhe gegen Springen */
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: var(--primary-dark);
+            margin: 0 0 10px 0;
+            font-size: 1.8rem;
+        }
+
+        .instruction {
+            color: #607d8b;
+            font-size: 1.1rem;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            background-color: #eee;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            height: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: var(--primary);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* Screens */
+        .screen {
+            display: none; /* Standardmäßig ausgeblendet */
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            width: 100%;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        /* Game Elements */
+        .context-box {
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 10px;
+            color: var(--secondary);
+            padding: 15px;
+            background: #e8eaf6;
+            border-radius: 8px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .rus-context {
+            display: block;
+            font-weight: normal;
+            font-size: 1rem;
+            color: #555;
+            margin-top: 5px;
+        }
+
+        .area-label {
+            font-size: 0.9rem;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+            width: 100%;
+            text-align: left;
+        }
+
+        .drop-zone {
+            width: 100%;
+            min-height: 70px;
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            gap: 10px;
+            background-color: #fafafa;
+            transition: background 0.3s, border-color 0.3s;
+            box-sizing: border-box;
+        }
+
+        .drop-zone.correct {
+            border-color: var(--success);
+            background-color: #e8f5e9;
+        }
+
+        .drop-zone.wrong {
+            border-color: var(--error);
+            background-color: #ffebee;
+            animation: shake 0.4s;
+        }
+
+        /* Word Blocks */
+        .word-block {
+            background-color: var(--block-bg);
+            border: 2px solid var(--block-border);
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 3px 0 #9e9e9e;
+            transition: transform 0.1s, box-shadow 0.1s;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .word-block:active {
+            transform: translateY(3px);
+            box-shadow: 0 0 0 #9e9e9e;
+        }
+
+        .word-block.highlight-prep {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary-dark);
+            box-shadow: 0 3px 0 var(--primary-dark);
+        }
+
+        .source-area {
+            border-style: solid;
+            border-color: #eee;
+            background-color: #f5f5f5;
+        }
+
+        /* Controls */
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        button {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .btn-check {
+            background-color: var(--success);
+            color: white;
+        }
+        .btn-check:hover { background-color: #43a047; transform: translateY(-2px);}
+
+        .btn-next {
+            background-color: var(--secondary);
+            color: white;
+            display: none;
+        }
+        .btn-next:hover { background-color: #303f9f; transform: translateY(-2px);}
+
+        .feedback-msg {
+            min-height: 24px;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        /* End Screen Styling */
+        #end-screen {
+            text-align: center;
+            padding-top: 50px;
+        }
+        
+        #end-screen h2 {
+            color: var(--success);
+            font-size: 2rem;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-10px); }
+            40% { transform: translateX(10px); }
+            60% { transform: translateX(-10px); }
+            80% { transform: translateX(10px); }
+        }
+
+        @media (max-width: 600px) {
+            .container { padding: 15px; }
+            h1 { font-size: 1.5rem; }
+            .word-block { padding: 8px 15px; font-size: 1rem; }
+            .context-box { font-size: 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Die Sandwich-Struktur</h1>
+        <p class="instruction">Tippen Sie auf die Wörter, um den Satz zu bauen. Die Präposition gehört in die Mitte!</p>
+    </header>
+
+    <div class="progress-container">
+        <div class="progress-bar" id="progress-bar"></div>
+    </div>
+
+    <!-- SPIEL-SCREEN -->
+    <div id="game-screen" class="screen active">
+        
+        <div class="context-box">
+            <span id="de-text">Laden...</span>
+            <span class="rus-context" id="ru-context"></span>
+        </div>
+
+        <div style="width: 100%;">
+            <div class="area-label">Antwort:</div>
+            <div class="drop-zone" id="answer-zone"></div>
+        </div>
+
+        <div class="feedback-msg" id="feedback"></div>
+
+        <div style="width: 100%;">
+            <div class="area-label">Wörter (Antippen):</div>
+            <div class="drop-zone source-area" id="source-zone"></div>
+        </div>
+
+        <div class="controls">
+            <button class="btn-check" id="btn-check" onclick="checkAnswer()">Prüfen</button>
+            <button class="btn-next" id="btn-next" onclick="nextQuestion()">Nächste Frage</button>
+        </div>
+
+    </div>
+
+    <!-- END-SCREEN (Versteckt bis zum Ende) -->
+    <div id="end-screen" class="screen">
+        <h2>Glückwunsch!</h2>
+        <p>Du hast alle 10 Sätze richtig gebaut.</p>
+        <div style="font-size: 3rem; margin: 20px 0;">🥪</div>
+        <p>Das Baukasten-Prinzip sitzt!</p>
+        <button class="btn-next" style="display: inline-block; background-color: var(--primary);" onclick="initGame()">Noch mal spielen</button>
+    </div>
+
+</div>
+
+<script>
+    // 10 Beispiele
+    const questions = [
+        {
+            de: "Wir sprechen miteinander.",
+            ru_start: "Мы говорим...",
+            parts: ["друг", "с", "другом"], 
+            prepIndex: 1 
+        },
+        {
+            de: "Sie denken aneinander.",
+            ru_start: "Они думают...",
+            parts: ["друг", "о", "друге"],
+            prepIndex: 1
+        },
+        {
+            de: "Wir gehen oft zueinander.",
+            ru_start: "Мы часто ходим...",
+            parts: ["друг", "к", "другу"],
+            prepIndex: 1
+        },
+        {
+            de: "Ihr schaut einander an.",
+            ru_start: "Вы смотрите...",
+            parts: ["друг", "на", "друга"],
+            prepIndex: 1
+        },
+        {
+            de: "Sie wohnen weit voneinander.",
+            ru_start: "Они живут далеко...",
+            parts: ["друг", "от", "друга"],
+            prepIndex: 1
+        },
+        {
+            de: "Wir können nicht ohne einander leben.",
+            ru_start: "Мы не можем жить...",
+            parts: ["друг", "без", "друга"],
+            prepIndex: 1
+        },
+        {
+            de: "Sie leben füreinander.",
+            ru_start: "Они живут...",
+            parts: ["друг", "для", "друга"],
+            prepIndex: 1
+        },
+        {
+            de: "Wir vermissen einander.",
+            ru_start: "Мы скучаем...",
+            parts: ["друг", "по", "другу"],
+            prepIndex: 1
+        },
+        {
+            de: "Sie haben sich voreinander entschuldigt.",
+            ru_start: "Они извинились...",
+            parts: ["друг", "перед", "другом"],
+            prepIndex: 1
+        },
+        {
+            de: "Wir haben keine Geheimnisse voreinander.",
+            ru_start: "У нас нет секретов...",
+            parts: ["друг", "от", "друга"],
+            prepIndex: 1
+        }
+    ];
+
+    let currentQIndex = 0;
+
+    function initGame() {
+        currentQIndex = 0;
+        
+        // Screens umschalten
+        document.getElementById('end-screen').classList.remove('active');
+        document.getElementById('game-screen').classList.add('active');
+        
+        loadQuestion(currentQIndex);
+    }
+
+    function loadQuestion(index) {
+        const q = questions[index];
+        
+        // Texte setzen
+        document.getElementById('de-text').textContent = q.de;
+        document.getElementById('ru-context').textContent = q.ru_start;
+        
+        // Feedback und Styles zurücksetzen
+        const fb = document.getElementById('feedback');
+        fb.textContent = "";
+        fb.style.color = "#333";
+        
+        const answerZone = document.getElementById('answer-zone');
+        answerZone.classList.remove('correct', 'wrong');
+        answerZone.innerHTML = "";
+        
+        const sourceZone = document.getElementById('source-zone');
+        sourceZone.innerHTML = "";
+        
+        // Buttons
+        document.getElementById('btn-check').style.display = "inline-block";
+        document.getElementById('btn-next').style.display = "none";
+
+        // Progress Bar update
+        const percent = (index / questions.length) * 100;
+        document.getElementById('progress-bar').style.width = percent + "%";
+
+        // Blöcke erstellen und mischen
+        let blocks = [...q.parts];
+        shuffleArray(blocks);
+
+        blocks.forEach(word => {
+            const el = createBlock(word);
+            sourceZone.appendChild(el);
+        });
+    }
+
+    function createBlock(text) {
+        const div = document.createElement('div');
+        div.className = 'word-block';
+        div.textContent = text;
+        div.onclick = function() {
+            moveBlock(div);
+        };
+        return div;
+    }
+
+    function moveBlock(element) {
+        // Bewegung blockieren, wenn Frage schon gelöst ist (Next Button sichtbar)
+        if(document.getElementById('btn-next').style.display === 'inline-block') return;
+
+        const sourceZone = document.getElementById('source-zone');
+        const answerZone = document.getElementById('answer-zone');
+
+        if (element.parentElement === sourceZone) {
+            answerZone.appendChild(element);
+        } else {
+            sourceZone.appendChild(element);
+        }
+    }
+
+    function checkAnswer() {
+        const answerZone = document.getElementById('answer-zone');
+        const userBlocks = Array.from(answerZone.children);
+        const q = questions[currentQIndex];
+
+        // 1. Check ob alle Wörter benutzt wurden
+        if (userBlocks.length < q.parts.length) {
+            showMessage("Bitte benutze alle Wörter.", "orange");
+            return;
+        }
+
+        // 2. Reihenfolge prüfen
+        const userOrder = userBlocks.map(b => b.textContent);
+        const isCorrect = JSON.stringify(userOrder) === JSON.stringify(q.parts);
+
+        if (isCorrect) {
+            // RICHTIG
+            answerZone.classList.add('correct');
+            answerZone.classList.remove('wrong');
+            showMessage("Richtig! Die Präposition ist in der Mitte.", "green");
+            
+            // Highlight Preposition (Sandwich Belag)
+            const prepWord = q.parts[q.prepIndex];
+            userBlocks.forEach(block => {
+                if (block.textContent === prepWord) {
+                    block.classList.add('highlight-prep');
+                }
+            });
+
+            document.getElementById('btn-check').style.display = "none";
+            document.getElementById('btn-next').style.display = "inline-block";
+            
+            // Progress für aktuellen Schritt füllen
+            const percent = ((currentQIndex + 1) / questions.length) * 100;
+            document.getElementById('progress-bar').style.width = percent + "%";
+
+        } else {
+            // FALSCH
+            answerZone.classList.add('wrong');
+            setTimeout(() => {
+                answerZone.classList.remove('wrong');
+            }, 500);
+            
+            // Spezifisches Feedback wenn Präposition nicht in Mitte
+            if (userOrder[1] !== q.parts[1]) {
+                 showMessage("Falsch. Denk an das Sandwich: Brot - Belag - Brot!", "red");
+            } else {
+                 showMessage("Noch nicht ganz richtig.", "red");
+            }
+        }
+    }
+
+    function nextQuestion() {
+        currentQIndex++;
+        if (currentQIndex < questions.length) {
+            loadQuestion(currentQIndex);
+        } else {
+            // Spielende erreicht
+            document.getElementById('game-screen').classList.remove('active');
+            document.getElementById('end-screen').classList.add('active');
+            document.getElementById('progress-bar').style.width = "100%";
+        }
+    }
+
+    function showMessage(text, color) {
+        const fb = document.getElementById('feedback');
+        fb.textContent = text;
+        if(color === "red") fb.style.color = "var(--error)";
+        if(color === "green") fb.style.color = "var(--success)";
+        if(color === "orange") fb.style.color = "#FF9800";
+    }
+
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+    }
+
+    // Start beim Laden
+    initGame();
+
+</script>
+
+</body>
+</html>
