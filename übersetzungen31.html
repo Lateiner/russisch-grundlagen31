@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Russisch: Übersetzungs-Drill (Sandwich-Bau)</title>
+    <style>
+        :root {
+            --primary: #283593; /* Indigo */
+            --bg-color: #e8eaf6;
+            --card-bg: #ffffff;
+            --text: #37474f;
+            --success: #43a047;
+            --error: #e53935;
+            --border: #c5cae9;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            color: var(--primary);
+            margin: 0 0 10px 0;
+            font-size: 1.8rem;
+        }
+
+        .subtitle {
+            color: #5c6bc0;
+            font-size: 1.1rem;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* Drill Item Card */
+        .drill-card {
+            background-color: #fff;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* Top Row: German Word */
+        .german-prompt {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #1a237e;
+            border-bottom: 2px solid #e8eaf6;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+
+        .german-hint {
+            font-size: 0.9rem;
+            font-weight: normal;
+            color: #7986cb;
+            font-style: italic;
+        }
+
+        /* Construction Area */
+        .construction-area {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* The 3 Slots */
+        .select-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        label {
+            font-size: 0.75rem;
+            color: #9fa8da;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        select {
+            appearance: none;
+            background-color: #f5f5f5;
+            border: 2px solid #9fa8da;
+            border-radius: 6px;
+            padding: 10px 30px 10px 15px;
+            font-size: 1.1rem;
+            font-family: inherit;
+            cursor: pointer;
+            color: #333;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23283593%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+            background-repeat: no-repeat;
+            background-position: right .7em top 50%;
+            background-size: .65em auto;
+            min-width: 120px;
+            transition: all 0.3s;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(40, 53, 147, 0.1);
+        }
+
+        /* Validation States */
+        .select-group.correct select {
+            border-color: var(--success);
+            background-color: #e8f5e9;
+            color: #1b5e20;
+        }
+
+        .select-group.wrong select {
+            border-color: var(--error);
+            background-color: #ffebee;
+            animation: shake 0.4s;
+        }
+
+        /* Plus sign between slots */
+        .separator {
+            font-weight: bold;
+            color: #c5cae9;
+            font-size: 1.2rem;
+        }
+
+        /* Feedback Area */
+        .feedback-text {
+            min-height: 24px;
+            font-weight: bold;
+            font-size: 0.95rem;
+            margin-top: 5px;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-5px); }
+            40% { transform: translateX(5px); }
+            60% { transform: translateX(-5px); }
+            80% { transform: translateX(5px); }
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 40px;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            min-width: 150px;
+        }
+
+        .btn-reset { background-color: #90a4ae; color: white; }
+        .btn-reset:hover { background-color: #78909c; }
+
+        .btn-solve { border: 2px solid var(--primary); color: var(--primary); background: transparent; }
+        .btn-solve:hover { background-color: #e8eaf6; }
+
+        /* Responsive */
+        @media (max-width: 650px) {
+            .container { padding: 15px; }
+            .construction-area { flex-direction: column; align-items: stretch; }
+            .separator { display: none; } /* Hide '+' on mobile stack */
+            select { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Übersetzungs-Drill</h1>
+        <div class="subtitle">
+            Bauen Sie die russische "Sandwich-Struktur".<br>
+            <strong>Deutsch (1 Wort) &rarr; Russisch (3 Wörter)</strong>
+        </div>
+    </header>
+
+    <div id="drill-area">
+        <!-- Fragen werden hier generiert -->
+    </div>
+
+    <div class="controls">
+        <button class="btn-reset" onclick="initDrill()">Neu starten</button>
+        <button class="btn-solve" onclick="showSolutions()">Lösungen anzeigen</button>
+    </div>
+</div>
+
+<script>
+    // Optionen für die Dropdowns
+    const optionsPart1 = ["---", "друг", "друга", "другу"]; // Distraktoren (falsche Fälle für Wort 1)
+    const optionsPrep = ["---", "с", "о", "к", "от", "на", "без", "для", "перед", "по"];
+    const optionsPart2 = ["---", "друга", "другу", "другом", "друге"];
+
+    // Die Aufgaben (8 Beispiele)
+    const tasks = [
+        {
+            de: "miteinander",
+            hint: "(sprechen)",
+            p1: "друг",
+            prep: "с",
+            p2: "другом" // Instrumental
+        },
+        {
+            de: "übereinander",
+            hint: "(denken/wissen)",
+            p1: "друг",
+            prep: "о",
+            p2: "друге" // Präpositiv
+        },
+        {
+            de: "zueinander",
+            hint: "(gehen/kommen)",
+            p1: "друг",
+            prep: "к",
+            p2: "другу" // Dativ
+        },
+        {
+            de: "voneinander",
+            hint: "(bekommen/wohnen)",
+            p1: "друг",
+            prep: "от",
+            p2: "друга" // Genitiv
+        },
+        {
+            de: "aufeinander",
+            hint: "(schauen/blicken)",
+            p1: "друг",
+            prep: "на",
+            p2: "друга" // Akkusativ
+        },
+        {
+            de: "füreinander",
+            hint: "(leben/tun)",
+            p1: "друг",
+            prep: "для",
+            p2: "друга" // Genitiv
+        },
+        {
+            de: "voreinander",
+            hint: "(entschuldigen/Angst haben)",
+            p1: "друг",
+            prep: "перед",
+            p2: "другом" // Instrumental
+        },
+        {
+            de: "ohneeinander",
+            hint: "(nicht leben können)",
+            p1: "друг",
+            prep: "без",
+            p2: "друга" // Genitiv
+        }
+    ];
+
+    function initDrill() {
+        const area = document.getElementById('drill-area');
+        area.innerHTML = "";
+
+        tasks.forEach((task, index) => {
+            const card = document.createElement('div');
+            card.className = 'drill-card';
+            card.id = `task-${index}`;
+
+            // German Prompt
+            const prompt = document.createElement('div');
+            prompt.className = 'german-prompt';
+            prompt.innerHTML = `${index + 1}. ${task.de} <span class="german-hint">${task.hint}</span>`;
+            
+            // Construction Zone
+            const zone = document.createElement('div');
+            zone.className = 'construction-area';
+
+            // Slot 1 (Nominativ)
+            const grp1 = createSelectGroup(index, 1, "Wort 1 (Wer?)", optionsPart1);
+            // Slot 2 (Präposition)
+            const grp2 = createSelectGroup(index, 2, "Präposition", optionsPrep);
+            // Slot 3 (Dekliniert)
+            const grp3 = createSelectGroup(index, 3, "Wort 2 (Fall)", optionsPart2);
+
+            // Separators
+            const sep1 = document.createElement('span'); sep1.className = 'separator'; sep1.textContent = "+";
+            const sep2 = document.createElement('span'); sep2.className = 'separator'; sep2.textContent = "+";
+
+            zone.appendChild(grp1);
+            zone.appendChild(sep1);
+            zone.appendChild(grp2);
+            zone.appendChild(sep2);
+            zone.appendChild(grp3);
+
+            // Feedback
+            const fb = document.createElement('div');
+            fb.className = 'feedback-text';
+            fb.id = `fb-${index}`;
+
+            card.appendChild(prompt);
+            card.appendChild(zone);
+            card.appendChild(fb);
+            area.appendChild(card);
+        });
+    }
+
+    function createSelectGroup(taskIndex, slotIndex, labelText, options) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'select-group';
+        wrapper.id = `grp-${taskIndex}-${slotIndex}`;
+
+        const label = document.createElement('label');
+        label.textContent = labelText;
+
+        const select = document.createElement('select');
+        select.dataset.taskIndex = taskIndex;
+        select.dataset.slot = slotIndex;
+        
+        // Populate
+        options.forEach(opt => {
+            const el = document.createElement('option');
+            el.value = opt;
+            el.textContent = opt;
+            select.appendChild(el);
+        });
+
+        // Event Listener
+        select.addEventListener('change', () => checkTask(taskIndex));
+
+        wrapper.appendChild(label);
+        wrapper.appendChild(select);
+        return wrapper;
+    }
+
+    function checkTask(index) {
+        const task = tasks[index];
+        const card = document.getElementById(`task-${index}`);
+        const fb = document.getElementById(`fb-${index}`);
+
+        // Get Select Wrappers and Elements
+        const grp1 = document.getElementById(`grp-${index}-1`);
+        const grp2 = document.getElementById(`grp-${index}-2`);
+        const grp3 = document.getElementById(`grp-${index}-3`);
+
+        const val1 = grp1.querySelector('select').value;
+        const val2 = grp2.querySelector('select').value;
+        const val3 = grp3.querySelector('select').value;
+
+        // Reset Styles
+        [grp1, grp2, grp3].forEach(g => {
+            g.classList.remove('wrong', 'correct');
+        });
+        fb.textContent = "";
+
+        // Wait until all 3 are selected (not "---")
+        if (val1 === "---" || val2 === "---" || val3 === "---") {
+            return; 
+        }
+
+        // Logic Check
+        let isCorrect = true;
+
+        if (val1 !== task.p1) { grp1.classList.add('wrong'); isCorrect = false; }
+        if (val2 !== task.prep) { grp2.classList.add('wrong'); isCorrect = false; }
+        if (val3 !== task.p2) { grp3.classList.add('wrong'); isCorrect = false; }
+
+        if (isCorrect) {
+            // Success
+            [grp1, grp2, grp3].forEach(g => g.classList.add('correct'));
+            fb.textContent = "Richtig! (друг " + task.prep + " " + task.p2 + ")";
+            fb.style.color = "var(--success)";
+        } else {
+            // Error
+            fb.textContent = "Noch nicht ganz richtig. Überprüfen Sie die rot markierten Felder.";
+            fb.style.color = "var(--error)";
+            
+            // Specific hint for Word 1 (often forgotten that it stays Nominative)
+            if(val1 !== task.p1) {
+                fb.textContent += " Tipp: Das erste Wort ist immer 'друг' (Nominativ).";
+            }
+        }
+    }
+
+    function showSolutions() {
+        tasks.forEach((task, index) => {
+            const grp1 = document.getElementById(`grp-${index}-1`);
+            const grp2 = document.getElementById(`grp-${index}-2`);
+            const grp3 = document.getElementById(`grp-${index}-3`);
+            const fb = document.getElementById(`fb-${index}`);
+
+            // Set Values
+            grp1.querySelector('select').value = task.p1;
+            grp2.querySelector('select').value = task.prep;
+            grp3.querySelector('select').value = task.p2;
+
+            // Set Styles
+            [grp1, grp2, grp3].forEach(g => {
+                g.classList.remove('wrong');
+                g.classList.add('correct');
+            });
+
+            fb.textContent = "Lösung angezeigt.";
+            fb.style.color = "var(--primary)";
+        });
+    }
+
+    // Start
+    initDrill();
+
+</script>
+
+</body>
+</html>
