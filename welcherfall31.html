@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Russisch Grammatik: Sofort-Feedback</title>
+    <style>
+        :root {
+            --primary: #00897b;
+            --bg-color: #e0f2f1;
+            --card-bg: #ffffff;
+            --text: #263238;
+            --success: #43a047; /* Grün */
+            --error: #e53935;   /* Rot */
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: var(--primary);
+            margin: 0 0 10px 0;
+            font-size: 1.8rem;
+        }
+
+        /* Question Card */
+        .question-card {
+            background-color: #fff;
+            border: 1px solid #cfd8dc;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: border-color 0.3s;
+        }
+
+        /* Wenn Frage gelöst ist */
+        .question-card.solved {
+            border-color: var(--success);
+            background-color: #f1f8e9; /* Ganz helles Grün */
+        }
+
+        .question-header {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .verb-highlight {
+            color: var(--primary);
+            background-color: #e0f2f1;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        .translation-hint {
+            font-size: 0.9rem;
+            color: #78909c;
+            font-style: italic;
+            margin-left: auto;
+        }
+
+        /* Options Grid */
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        /* The clickable option button */
+        .option-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            background-color: #fafafa;
+            transition: all 0.2s ease;
+            user-select: none;
+            position: relative;
+        }
+
+        .option-btn:hover:not(.disabled) {
+            border-color: #b0bec5;
+            background-color: #eceff1;
+            transform: translateY(-2px);
+        }
+
+        /* CORRECT State */
+        .option-btn.correct {
+            border-color: var(--success);
+            background-color: var(--success);
+            color: white;
+            font-weight: bold;
+            pointer-events: none; /* Nicht mehr klickbar */
+        }
+
+        /* WRONG State */
+        .option-btn.wrong {
+            border-color: var(--error);
+            background-color: #ffebee;
+            color: var(--error);
+            animation: shake 0.4s;
+        }
+
+        /* Disabled State (for other options once solved) */
+        .option-btn.disabled {
+            opacity: 0.6;
+            cursor: default;
+            pointer-events: none;
+        }
+
+        /* Shake Animation for Wrong Answer */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-5px); }
+            40% { transform: translateX(5px); }
+            60% { transform: translateX(-5px); }
+            80% { transform: translateX(5px); }
+        }
+
+        /* Explanation Box */
+        .explanation {
+            margin-top: 15px;
+            font-size: 0.95rem;
+            padding: 10px 15px;
+            border-radius: 6px;
+            display: none; /* Versteckt bis gelöst */
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border-left: 4px solid var(--success);
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+            justify-content: center;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            min-width: 160px;
+        }
+
+        .btn-reset {
+            background-color: #b0bec5;
+            color: white;
+        }
+        .btn-reset:hover { background-color: #90a4ae; }
+
+        .btn-solve {
+            background-color: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+        .btn-solve:hover { background-color: #e0f2f1; }
+
+        /* Mobile */
+        @media (max-width: 700px) {
+            .options-grid { grid-template-columns: 1fr; }
+            .translation-hint { width: 100%; margin-left: 0; margin-top: 5px; }
+            .container { padding: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Sofort-Feedback: Rektion der Verben</h1>
+        <p style="color: #666;">Klicken Sie auf die richtige Antwort. Sie sehen das Ergebnis sofort.</p>
+    </header>
+
+    <div id="quiz-container">
+        <!-- Fragen werden hier generiert -->
+    </div>
+
+    <div class="controls">
+        <button class="btn-reset" onclick="resetQuiz()">Alle zurücksetzen</button>
+        <button class="btn-solve" onclick="showSolutions()">Lösungen anzeigen</button>
+    </div>
+</div>
+
+<script>
+    const questions = [
+        {
+            verb: "помогать",
+            context: "Мы помогаем...",
+            translation: "(helfen + Dativ)",
+            options: ["друг друга", "друг другу", "друг другом"],
+            correctIndex: 1, // 0-based: "друг другу"
+            hint: "Richtig! 'Помогать' verlangt den Dativ (-у)."
+        },
+        {
+            verb: "любить",
+            context: "Они любят...",
+            translation: "(lieben + Akkusativ)",
+            options: ["друг друга", "друг другу", "друг друге"],
+            correctIndex: 0,
+            hint: "Richtig! Akkusativ (belebt) = Genitiv (-а)."
+        },
+        {
+            verb: "гордиться",
+            context: "Вы гордитесь...",
+            translation: "(stolz sein + Instrumental)",
+            options: ["друг друга", "друг с другом", "друг другом"],
+            correctIndex: 2,
+            hint: "Stimmt! Instrumental ohne Präposition (-ом)."
+        },
+        {
+            verb: "жить без",
+            context: "Жить без...",
+            translation: "(leben ohne + Genitiv)",
+            options: ["друг друга", "друг другу", "друг другом"],
+            correctIndex: 0,
+            hint: "Genau! Nach 'без' steht immer der Genitiv (-а)."
+        },
+        {
+            verb: "скучать по",
+            context: "Скучать по...",
+            translation: "(vermissen + Dativ)",
+            options: ["друг другу", "друг друга", "друг друге"],
+            correctIndex: 0,
+            hint: "Richtig! 'Скучать по' verlangt meist den Dativ (-у)."
+        },
+        {
+            verb: "разговаривать с",
+            context: "Разговаривать...",
+            translation: "(unterhalten mit + Instrumental)",
+            options: ["с друг другом", "друг с другом", "друг другом"],
+            correctIndex: 1,
+            hint: "Super! Die Präposition 'с' steht in der Mitte."
+        },
+        {
+            verb: "думать о",
+            context: "Думать...",
+            translation: "(denken über + Präpositiv)",
+            options: ["друг о друге", "о друг друге", "друг о друга"],
+            correctIndex: 0,
+            hint: "Richtig! Präpositiv mit 'о' in der Mitte (-е)."
+        },
+        {
+            verb: "смотреть на",
+            context: "Смотреть...",
+            translation: "(schauen auf + Akkusativ)",
+            options: ["друг на друга", "друг на другу", "на друг друга"],
+            correctIndex: 0,
+            hint: "Genau! Akkusativ mit 'на' (-а)."
+        }
+    ];
+
+    const container = document.getElementById('quiz-container');
+
+    function renderQuiz() {
+        container.innerHTML = '';
+        questions.forEach((q, qIndex) => {
+            const card = document.createElement('div');
+            card.className = 'question-card';
+            card.id = `card-${qIndex}`;
+
+            const header = document.createElement('div');
+            header.className = 'question-header';
+            header.innerHTML = `
+                <span>${qIndex + 1}. <span class="verb-highlight">${q.verb}</span></span>
+                <span>${q.context}</span>
+                <span class="translation-hint">${q.translation}</span>
+            `;
+
+            const grid = document.createElement('div');
+            grid.className = 'options-grid';
+
+            q.options.forEach((optText, optIndex) => {
+                const btn = document.createElement('div');
+                btn.className = 'option-btn';
+                btn.textContent = optText;
+                // Click Event für Sofort-Feedback
+                btn.onclick = () => handleAnswer(qIndex, optIndex, btn);
+                grid.appendChild(btn);
+            });
+
+            const expl = document.createElement('div');
+            expl.className = 'explanation';
+            expl.id = `expl-${qIndex}`;
+            expl.textContent = q.hint;
+
+            card.appendChild(header);
+            card.appendChild(grid);
+            card.appendChild(expl);
+            container.appendChild(card);
+        });
+    }
+
+    function handleAnswer(qIndex, optIndex, btnElement) {
+        // Frage Daten holen
+        const q = questions[qIndex];
+        const card = document.getElementById(`card-${qIndex}`);
+        
+        // Wenn Frage schon gelöst ist, nichts tun (optional, hier lassen wir Korrekturen zu, bis richtig)
+        if (card.classList.contains('solved')) return;
+
+        if (optIndex === q.correctIndex) {
+            // === RICHTIG ===
+            btnElement.classList.remove('wrong');
+            btnElement.classList.add('correct');
+            
+            // Karte als gelöst markieren
+            card.classList.add('solved');
+            
+            // Erklärung anzeigen
+            const expl = document.getElementById(`expl-${qIndex}`);
+            expl.style.display = 'block';
+
+            // Andere Optionen deaktivieren
+            const allBtns = card.querySelectorAll('.option-btn');
+            allBtns.forEach(btn => {
+                if (btn !== btnElement) {
+                    btn.classList.add('disabled');
+                    btn.classList.remove('wrong'); // Rote Markierungen entfernen für sauberen Look
+                }
+            });
+
+        } else {
+            // === FALSCH ===
+            btnElement.classList.add('wrong');
+            // Timeout entfernen der Shake-Animation (optional), aber Klasse lassen wir, damit User sieht was er geklickt hat
+        }
+    }
+
+    function resetQuiz() {
+        renderQuiz();
+    }
+
+    function showSolutions() {
+        questions.forEach((q, qIndex) => {
+            const card = document.getElementById(`card-${qIndex}`);
+            const allBtns = card.querySelectorAll('.option-btn');
+            
+            // Reset Zustand
+            card.classList.remove('solved');
+            
+            allBtns.forEach((btn, idx) => {
+                btn.classList.remove('wrong', 'correct', 'disabled');
+                if (idx === q.correctIndex) {
+                    // Manuell den Klick simulieren oder Styles setzen
+                    btn.classList.add('correct');
+                } else {
+                    btn.classList.add('disabled');
+                }
+            });
+            
+            card.classList.add('solved');
+            const expl = document.getElementById(`expl-${qIndex}`);
+            expl.style.display = 'block';
+        });
+    }
+
+    // Start
+    renderQuiz();
+
+</script>
+
+</body>
+</html>
