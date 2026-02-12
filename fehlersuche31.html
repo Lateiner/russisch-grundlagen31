@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Russisch: Fehlersuche (Syntax)</title>
+    <style>
+        :root {
+            --primary: #d32f2f; /* Rot als Signalfarbe für "Korrektur" */
+            --primary-dark: #b71c1c;
+            --accent: #1976d2;
+            --bg-color: #f9fbe7; /* Leichtes Gelb/Grün */
+            --card-bg: #ffffff;
+            --text: #37474f;
+            --success: #388e3c;
+            --error: #d32f2f;
+            --border: #e0e0e0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            color: var(--primary);
+            margin: 0 0 10px 0;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .subtitle {
+            color: #78909c;
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Error Card */
+        .error-card {
+            background-color: #fff;
+            border: 2px solid #ffcdd2; /* Light Red Border */
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        /* Wenn gelöst */
+        .error-card.solved {
+            border-color: var(--success);
+            background-color: #f1f8e9;
+        }
+
+        .badge-error {
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background-color: var(--error);
+            color: white;
+            padding: 2px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .sentence-display {
+            font-size: 1.3rem;
+            text-align: center;
+            margin: 15px 0 25px 0;
+            color: #546e7a;
+        }
+
+        /* The mistake highlight */
+        .strike-through {
+            text-decoration: line-through;
+            color: var(--error);
+            font-weight: bold;
+            background-color: #ffebee;
+            padding: 0 5px;
+            border-radius: 4px;
+        }
+
+        /* Options Area */
+        .correction-label {
+            font-size: 0.9rem;
+            color: #999;
+            margin-bottom: 10px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .option-btn {
+            background-color: #f5f5f5;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            padding: 12px 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            font-weight: 500;
+            user-select: none;
+        }
+
+        .option-btn:hover:not(.disabled) {
+            border-color: #90a4ae;
+            background-color: #eceff1;
+            transform: translateY(-2px);
+        }
+
+        /* Correct State */
+        .option-btn.correct {
+            background-color: var(--success);
+            border-color: var(--success);
+            color: white;
+            pointer-events: none;
+        }
+
+        /* Wrong State */
+        .option-btn.wrong {
+            background-color: var(--error);
+            border-color: var(--error);
+            color: white;
+            animation: shake 0.4s;
+        }
+
+        .option-btn.disabled {
+            opacity: 0.5;
+            pointer-events: none;
+            cursor: default;
+        }
+
+        /* Explanation */
+        .explanation {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            display: none; /* Hidden initially */
+            text-align: center;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-5px); }
+            40% { transform: translateX(5px); }
+            60% { transform: translateX(-5px); }
+            80% { transform: translateX(5px); }
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 40px;
+        }
+
+        button.ctrl-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            min-width: 150px;
+        }
+
+        .btn-reset { background-color: #90a4ae; color: white; }
+        .btn-reset:hover { background-color: #78909c; }
+
+        .btn-solve { border: 2px solid var(--accent); color: var(--accent); background: transparent; }
+        .btn-solve:hover { background-color: #e3f2fd; }
+
+        @media (max-width: 700px) {
+            .container { padding: 15px; }
+            .options-grid { grid-template-columns: 1fr; } /* Stack vertically on mobile */
+            .sentence-display { font-size: 1.1rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>🛠️ Syntax-Fehlersuche</h1>
+        <div class="subtitle">
+            Die folgenden Sätze enthalten Fehler. <br>
+            Wählen Sie die <strong>korrekte Version</strong> des rot markierten Teils aus.
+        </div>
+    </header>
+
+    <div id="quiz-area">
+        <!-- Fragen werden hier generiert -->
+    </div>
+
+    <div class="controls">
+        <button class="ctrl-btn btn-reset" onclick="initQuiz()">Neu starten</button>
+        <button class="ctrl-btn btn-solve" onclick="showSolutions()">Lösungen anzeigen</button>
+    </div>
+</div>
+
+<script>
+    const questions = [
+        {
+            wrongContext: "Они говорили",
+            wrongPart: "с друг другом",
+            afterContext: ".",
+            options: ["с друг другом", "друг с другом", "друг другом"],
+            correctIndex: 1, // "друг с другом"
+            explanation: "Die Präposition 'с' muss zwischen die Wörter: drug-s-drugom."
+        },
+        {
+            wrongContext: "Мы думаем",
+            wrongPart: "о друг друге",
+            afterContext: ".",
+            options: ["о друг друге", "друг о друге", "друг друге"],
+            correctIndex: 1, // "друг о друге"
+            explanation: "Die Präposition 'о' steht in der Mitte: drug-o-druge."
+        },
+        {
+            wrongContext: "Они пошли в гости",
+            wrongPart: "к друг другу",
+            afterContext: ".",
+            options: ["к друг другу", "друг другу", "друг к другу"],
+            correctIndex: 2, // "друг к другу"
+            explanation: "Präposition 'к' in die Mitte: drug-k-drugu."
+        },
+        {
+            wrongContext: "Вы получили подарки",
+            wrongPart: "от друг друга",
+            afterContext: "?",
+            options: ["друг от друга", "от друг друга", "от друга друга"],
+            correctIndex: 0, // "друг от друга"
+            explanation: "Präposition 'от' in die Mitte: drug-ot-druga."
+        },
+        {
+            wrongContext: "Мы не можем жить",
+            wrongPart: "без друг друга",
+            afterContext: ".",
+            options: ["без друг друга", "друг без друга", "друг друга"],
+            correctIndex: 1, // "друг без друга"
+            explanation: "'ohne einander' = drug-bez-druga."
+        },
+        {
+            wrongContext: "Они смотрели",
+            wrongPart: "на друг друга",
+            afterContext: ".",
+            options: ["на друг друга", "друг на друга", "друг на другу"],
+            correctIndex: 1, // "друг на друга"
+            explanation: "'auf einander' = drug-na-druga."
+        },
+        {
+            wrongContext: "Мы помогаем",
+            wrongPart: "друг друга",
+            afterContext: ".",
+            options: ["друг друга", "друг другом", "друг другу"],
+            correctIndex: 2, // "друг другу"
+            explanation: "Helfen (помогать) verlangt den Dativ (-у), ohne Präposition."
+        },
+        {
+            wrongContext: "Они любят",
+            wrongPart: "друг другу",
+            afterContext: ".",
+            options: ["друг друга", "друг другу", "друг другом"],
+            correctIndex: 0, // "друг друга"
+            explanation: "Lieben (любить) verlangt den Akkusativ (-а)."
+        },
+        {
+            wrongContext: "Они извинились",
+            wrongPart: "перед друг другом",
+            afterContext: ".",
+            options: ["перед друг другом", "друг перед другом", "друг с другом"],
+            correctIndex: 1, // "друг перед другом"
+            explanation: "Die Präposition 'перед' gehört in die Mitte."
+        },
+        {
+            wrongContext: "Мы скучаем",
+            wrongPart: "друг друга",
+            afterContext: ".",
+            options: ["друг друга", "друг по другу", "по друг другу"],
+            correctIndex: 1, // "друг по другу"
+            explanation: "Vermissen braucht 'по' + Dativ: drug-po-drugu."
+        }
+    ];
+
+    function initQuiz() {
+        const area = document.getElementById('quiz-area');
+        area.innerHTML = "";
+
+        questions.forEach((q, qIndex) => {
+            const card = document.createElement('div');
+            card.className = 'error-card';
+            card.id = `card-${qIndex}`;
+
+            const badge = document.createElement('div');
+            badge.className = 'badge-error';
+            badge.textContent = `Fehler ${qIndex + 1}`;
+
+            // Satz Anzeige
+            const sentence = document.createElement('div');
+            sentence.className = 'sentence-display';
+            sentence.innerHTML = `
+                ${q.wrongContext} 
+                <span class="strike-through">${q.wrongPart}</span> 
+                ${q.afterContext}
+            `;
+
+            const label = document.createElement('div');
+            label.className = 'correction-label';
+            label.textContent = "Korrektur wählen:";
+
+            // Optionen Grid
+            const grid = document.createElement('div');
+            grid.className = 'options-grid';
+
+            q.options.forEach((optText, optIndex) => {
+                const btn = document.createElement('div');
+                btn.className = 'option-btn';
+                btn.textContent = optText;
+                btn.onclick = () => handleChoice(qIndex, optIndex, btn);
+                grid.appendChild(btn);
+            });
+
+            // Erklärung (versteckt)
+            const expl = document.createElement('div');
+            expl.className = 'explanation';
+            expl.id = `expl-${qIndex}`;
+            expl.innerHTML = `<strong>Korrekt!</strong> ${q.explanation}`;
+
+            card.appendChild(badge);
+            card.appendChild(sentence);
+            card.appendChild(label);
+            card.appendChild(grid);
+            card.appendChild(expl);
+            area.appendChild(card);
+        });
+    }
+
+    function handleChoice(qIndex, optIndex, btnElement) {
+        const q = questions[qIndex];
+        const card = document.getElementById(`card-${qIndex}`);
+
+        // Wenn schon gelöst, keine Interaktion
+        if (card.classList.contains('solved')) return;
+
+        if (optIndex === q.correctIndex) {
+            // Richtig
+            btnElement.classList.add('correct');
+            card.classList.add('solved');
+            
+            // Erklärung zeigen
+            document.getElementById(`expl-${qIndex}`).style.display = 'block';
+
+            // Andere Buttons deaktivieren
+            const allBtns = card.querySelectorAll('.option-btn');
+            allBtns.forEach(b => {
+                if (b !== btnElement) {
+                    b.classList.add('disabled');
+                    b.classList.remove('wrong'); // Clean up visuals
+                }
+            });
+
+        } else {
+            // Falsch
+            btnElement.classList.add('wrong');
+            // Shake effect handled by CSS animation
+        }
+    }
+
+    function showSolutions() {
+        questions.forEach((q, qIndex) => {
+            const card = document.getElementById(`card-${qIndex}`);
+            const allBtns = card.querySelectorAll('.option-btn');
+            
+            // Status zurücksetzen um sauber zu markieren
+            card.classList.remove('solved');
+            
+            allBtns.forEach((btn, idx) => {
+                btn.classList.remove('correct', 'wrong', 'disabled');
+                
+                if (idx === q.correctIndex) {
+                    btn.classList.add('correct');
+                } else {
+                    btn.classList.add('disabled');
+                }
+            });
+
+            card.classList.add('solved');
+            document.getElementById(`expl-${qIndex}`).style.display = 'block';
+        });
+    }
+
+    // Start
+    initQuiz();
+
+</script>
+
+</body>
+</html>
